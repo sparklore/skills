@@ -17,7 +17,7 @@
 ./sync-adapters.sh --install-local
 # 可选子集（显式空值 = 该项不装）
 ./sync-adapters.sh --install-local \
-  --rules=data-driven,no-silent-orchestration,no-zombie-dual-track \
+  --rules=audit-evidence,data-driven,no-silent-orchestration,no-zombie-dual-track \
   --skills=sparklore-architecture-gates,architecture-compliance-audit \
   --targets=cursor-rules,claude-rules,cursor-skills,agents-skills
 ```
@@ -47,6 +47,7 @@
 2. 合入后各人在 forge 根：`git submodule update --remote skills`（或按团队流程更新子模块指针），再在本地控制台点「安装 Agent 规则与 Skills」（或终端 `./sync-adapters.sh --install-local`）。
 3. **不要**只改本机 `.cursor/rules` 或 `~/.claude/rules` 当真相——下次同步会被覆盖。
 4. 审计类按需 skill：`../architecture-compliance-audit/`（不是 always）。
+5. `audit-evidence` 是**写报告时**的闸（审计 / 台账 / 复查结论），不是改代码时的闸；它与审计 skill 配对使用——skill 管跑什么命令，规则管一条结论凭什么敢写。
 
 ## Claude 专项说明
 

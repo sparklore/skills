@@ -15,10 +15,11 @@ RULES="$ROOT/rules"
 OUT_CURSOR="$ROOT/adapters/cursor"
 SKILLS_ROOT="$(cd "$ROOT/.." && pwd)"
 
-ALL_RULES="data-driven no-silent-orchestration no-zombie-dual-track"
+ALL_RULES="audit-evidence data-driven no-silent-orchestration no-zombie-dual-track"
 ALL_SKILLS="sparklore-architecture-gates architecture-compliance-audit"
 ALL_TARGETS="cursor-rules claude-rules cursor-skills agents-skills"
 
+DESC_audit_evidence='审计证据分级：每条发现标 G1 已确认 / G2 读过链 / G3 推断；G3 不得带预估或波次；差集不是结论'
 DESC_data_driven='数据驱动铁律：禁止业务硬编码、专用路由/capability、往冻结段加行；缺能力先改数据再加通用构件'
 DESC_no_silent_orchestration='禁止在 Go/JS 里静默加编排、重试、兜底；动手前必须如实说明为什么、好处、为何不进 QuestFlow'
 DESC_no_zombie_dual_track='禁止僵尸代码与双轨：生产零调用却靠测试/迁移/开关续命；删旧不搬家；单真相源'
