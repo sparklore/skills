@@ -1,0 +1,12 @@
+---
+description: 项目装了 CodeGraph 时，结构问题先用 codegraph_explore，再对具体行读文件
+alwaysApply: true
+---
+
+# CodeGraph
+
+项目有 `.codegraph/` 时：结构问题（调用关系、定义位置、一块区域怎么工作）先 `codegraph_explore`，传入 `projectPath`。它返回带行号的源码、调用路径和影响面。
+
+索引结果可信，不要再用搜索复核同一段。索引横幅标出的文件才改用直接读文件。`.codegraph/` 不存在时问用户要不要初始化，不要自己跑。
+
+配置、文档、索引没覆盖的细节再用普通读取和搜索。
