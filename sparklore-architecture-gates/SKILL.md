@@ -1,0 +1,45 @@
+---
+name: sparklore-architecture-gates
+description: >-
+  Sparklore architecture hard gates: data-driven (zero use-case hardcoding),
+  no silent orchestration, no zombie dual-track. Use on EVERY code change in
+  sparklore-forge or sparklore-clients — features, refactors, Foundry, Quest,
+  WidgetDSL, admin APIs, freeze.txt, cleanup/purge. Also when the user mentions
+  数据驱动、硬编码、静默编排、僵尸、双轨、freeze、QuestFlow, or types /sparklore-gates.
+  This skill is the shared SSoT for Cursor, Claude Code, and other agents;
+  tool-local copies under .cursor/rules or ~/.claude/rules are mirrors only.
+---
+
+# Sparklore 架构三闸（跨工具 SSoT）
+
+在 `sparklore-forge` / `sparklore-clients` 里改代码前，必须过这三道闸。完整条文在 `rules/`；本文件只留动手顺序。
+
+| 闸 | 文件 | 一句话 |
+|---|---|---|
+| 数据驱动 | [rules/data-driven.md](rules/data-driven.md) | 业务进合集 / QuestFlow / Record / WidgetDSL；Go/JS 无业务名 |
+| 禁止静默编排 | [rules/no-silent-orchestration.md](rules/no-silent-orchestration.md) | 重试/串并行/prompt/兜底先说明；能放 QuestFlow 默认否决 Go/JS |
+| 禁止僵尸双轨 | [rules/no-zombie-dual-track.md](rules/no-zombie-dual-track.md) | 单真相；测产同构；搬家≠删除 |
+
+项目长文：宿主仓 `docs/02-rules-data-driven.md`、`AGENTS.md` §5、`docs/04` 台账。  
+只读复查：兄弟 skill [`architecture-compliance-audit`](../architecture-compliance-audit/SKILL.md)。
+
+## 每改必做
+
+1. **两问**（`data-driven`）：删该应用要不要改 Go/JS？新应用要不要加 Go/JS？任一「要」→ 停手警告，给数据驱动替代方案。
+2. **五问**（`no-silent-orchestration`，写进回复）：坏在哪 / 可观察好处 / 为何不进 QuestFlow / 失败对外长什么样 / 退场台账。未答完或用户未说「可以改」→ 禁止改代码。
+3. **三问**（`no-zombie-dual-track`）：生产谁调用？删了谁红？有无第二真相？
+
+## 立即拦截（禁止静默照写）
+
+- 新增业务 `capability`、`/api/<feature>/*`、`widgetdsl` 业务 `kind`
+- Go/JS 硬编码业务 prompt、领域评分/术语当产品规则
+- 往 `freeze.txt` 冻结段加行，或拆文件搬家冒充迁出
+- 前端 `postMessage`/轮询串多条工作流；确定性假成功；写失败变成功
+
+拦截话术：
+
+> 该方案违反「Data-Driven Quest + Declarative WidgetDSL」铁律。应把流程放进 QuestFlow / 合集数据；Go 只留原子工具。需要豁免请明确说「豁免」并登记 `docs/04`。
+
+## 装到本机各工具
+
+见 [INSTALL.md](INSTALL.md)。改 `rules/*.md` 后跑 `./sync-adapters.sh`，再拷到 Cursor / Claude 本地目录。
