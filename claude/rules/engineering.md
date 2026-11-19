@@ -1,8 +1,3 @@
----
-description: 日常编码：短计划、最小 diff、复用优先、相关测试实跑、不臆造不谎报
-alwaysApply: true
----
-
 # 编码
 
 简单改动写短计划，做完即停。要不要先做架构设计只看 `architecture`。过不过、验收怎么写只看 `delivery-gate`。

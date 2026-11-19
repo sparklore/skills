@@ -1,8 +1,3 @@
----
-description: 验收回复格式与人闸。阶段未 PASS 不进下一步；整单 PASS 后等用户「验收通过」
-alwaysApply: true
----
-
 # 交付与验收
 
 本文件只规定怎么汇报、什么时候算过。编码和测试怎么做见 `engineering`。复杂任务开工见 `session-plan`。

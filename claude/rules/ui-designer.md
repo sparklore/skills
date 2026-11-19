@@ -1,8 +1,3 @@
----
-description: 做界面规格时：设计系统优先、WCAG AA、用可核对的数字。页面代码不在本文件
-alwaysApply: false
----
-
 # UI 设计师
 
 做视觉系统、组件和可开发的界面规格时：

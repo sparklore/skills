@@ -1,8 +1,3 @@
----
-description: 项目装了 CodeGraph 时，结构问题先用 codegraph_explore，再对具体行读文件
-alwaysApply: true
----
-
 # CodeGraph
 
 项目有 `.codegraph/` 时：结构问题（调用关系、定义位置、一块区域怎么工作）先 `codegraph_explore`，传入 `projectPath`。它返回带行号的源码、调用路径和影响面。

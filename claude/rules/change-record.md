@@ -1,8 +1,3 @@
----
-description: 改了代码、配置或脚本后：步骤注释、CHANGELOG、回复末尾可复制的中文 commit message。纯问答跳过
-alwaysApply: false
----
-
 # 改动收尾
 
 纯问答、只读、没产生 diff：下面三项都不用。本文件是注释、变更日志、commit 文案的唯一出处。

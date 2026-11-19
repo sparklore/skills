@@ -22,14 +22,16 @@
   --targets=cursor-rules,claude-rules,cursor-skills,agents-skills
 ```
 
-`--install-local` 按勾选写入：
+`--install-local` 按勾选写入（**同一 target 会写多处活镜像，保持一致**；`skills/` 仓只是远程备份）：
 
 | 目标 id | 路径 |
 |---|---|
-| `cursor-rules` | `<forge>/.cursor/rules/{name}.mdc` |
+| `cursor-rules` | `<forge>/.cursor/rules/{name}.mdc` **与** `~/.cursor/rules/{name}.mdc` |
 | `claude-rules` | `~/.claude/rules/{name}.md` |
-| `cursor-skills` | `<forge>/.cursor/skills/<skill>/` |
+| `cursor-skills` | `<forge>/.cursor/skills/<skill>/` **与** `~/.cursor/skills/<skill>/` **与** `~/.claude/skills/<skill>/` |
 | `agents-skills` | `<forge>/.agents/skills/<skill>/` |
+
+全量规则（含非闸）请用上一级 [`../install-local.sh`](../install-local.sh)（控制台「安装 Agent 规则与 Skills」已指向它）。
 
 ## 各工具怎么吃到「always」
 
@@ -45,7 +47,7 @@
 
 1. **改闸只改** `skills/sparklore-architecture-gates/rules/*.md`，提 PR 到 `sparklore/skills` 的 `dev-merge`（或团队主分支）。
 2. 合入后各人在 forge 根：`git submodule update --remote skills`（或按团队流程更新子模块指针），再在本地控制台点「安装 Agent 规则与 Skills」（或终端 `./sync-adapters.sh --install-local`）。
-3. **不要**只改本机 `.cursor/rules` 或 `~/.claude/rules` 当真相——下次同步会被覆盖。
+3. **不要**只改 `~/.claude`、`~/.cursor` 或项目 `.cursor` 当真相——下次同步会被覆盖；三处活镜像必须一致。
 4. 审计类按需 skill：`../architecture-compliance-audit/`（不是 always）。
 5. `audit-evidence` 是**写报告时**的闸（审计 / 台账 / 复查结论），不是改代码时的闸；它与审计 skill 配对使用——skill 管跑什么命令，规则管一条结论凭什么敢写。
 

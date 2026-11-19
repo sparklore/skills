@@ -1,8 +1,3 @@
----
-description: 对齐旧系统时按真实读路径实现。可以优化，但必须写下结构差异
-alwaysApply: false
----
-
 # 对齐既有系统
 
 移植或对照旧实现时才用本文件。空结果怎么返回见 `no-fake-data`。缓存能不能当实体真相见 `architecture`。

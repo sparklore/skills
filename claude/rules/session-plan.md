@@ -1,8 +1,3 @@
----
-description: 复杂任务先 Charter；执行 plan 先签字；同一会话最多跑 1 波；换会话时给填好的开工指令
-alwaysApply: false
----
-
 # 会话与 Plan
 
 ## Charter（复杂任务开工前）

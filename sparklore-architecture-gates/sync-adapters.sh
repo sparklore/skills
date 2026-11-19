@@ -139,18 +139,30 @@ if [ "$INSTALL" -ne 1 ]; then
 fi
 
 # Resolve forge root: .../sparklore-forge/skills/sparklore-architecture-gates -> ../..
+# 活镜像：~/.claude、~/.cursor、项目根 .cursor/.agents 必须一致；skills/ 只是远程仓备份检出。
 FORGE="$(cd "$ROOT/../.." && pwd)"
-CURSOR_RULES="$FORGE/.cursor/rules"
+CURSOR_RULES_PROJECT="$FORGE/.cursor/rules"
+CURSOR_RULES_HOME="${HOME}/.cursor/rules"
 CLAUDE_RULES="${HOME}/.claude/rules"
-CURSOR_SKILLS_ROOT="$FORGE/.cursor/skills"
+CURSOR_SKILLS_PROJECT="$FORGE/.cursor/skills"
+CURSOR_SKILLS_HOME="${HOME}/.cursor/skills"
+CLAUDE_SKILLS_HOME="${HOME}/.claude/skills"
 AGENTS_SKILLS_ROOT="$FORGE/.agents/skills"
 
+copy_rule_mdc() {
+  local name="$1"
+  local dest_dir="$2"
+  mkdir -p "$dest_dir"
+  cp "$OUT_CURSOR/$name.mdc" "$dest_dir/$name.mdc"
+  echo "installed Cursor .mdc: $dest_dir/$name.mdc"
+}
+
 if want_target cursor-rules || want_target claude-rules; then
-  mkdir -p "$CURSOR_RULES" "$CLAUDE_RULES"
+  mkdir -p "$CLAUDE_RULES"
   for name in $RULES_SEL; do
     if want_target cursor-rules; then
-      cp "$OUT_CURSOR/$name.mdc" "$CURSOR_RULES/$name.mdc"
-      echo "installed Cursor .mdc: $name"
+      copy_rule_mdc "$name" "$CURSOR_RULES_PROJECT"
+      copy_rule_mdc "$name" "$CURSOR_RULES_HOME"
     fi
     if want_target claude-rules; then
       cp "$RULES/$name.md" "$CLAUDE_RULES/$name.md"
@@ -159,33 +171,32 @@ if want_target cursor-rules || want_target claude-rules; then
   done
 fi
 
+copy_skill_tree() {
+  local src="$1"
+  local dest="$2"
+  mkdir -p "$dest"
+  cp "$src/SKILL.md" "$dest/"
+  [ -f "$src/INSTALL.md" ] && cp "$src/INSTALL.md" "$dest/"
+  [ -f "$src/checklist.md" ] && cp "$src/checklist.md" "$dest/"
+  if [ -d "$src/rules" ]; then
+    mkdir -p "$dest/rules"
+    cp "$src/rules"/*.md "$dest/rules/" 2>/dev/null || true
+  fi
+  echo "mirrored skill -> $dest"
+}
+
 mirror_skill() {
   local skill_id="$1"
   local src="$SKILLS_ROOT/$skill_id"
   [ -d "$src" ] || { echo "missing skill dir: $src" >&2; exit 1; }
   if want_target cursor-skills; then
-    local dest="$CURSOR_SKILLS_ROOT/$skill_id"
-    mkdir -p "$dest"
-    cp "$src/SKILL.md" "$dest/"
-    [ -f "$src/INSTALL.md" ] && cp "$src/INSTALL.md" "$dest/"
-    [ -f "$src/checklist.md" ] && cp "$src/checklist.md" "$dest/"
-    if [ -d "$src/rules" ]; then
-      mkdir -p "$dest/rules"
-      cp "$src/rules"/*.md "$dest/rules/" 2>/dev/null || true
-    fi
-    echo "mirrored skill -> $dest"
+    copy_skill_tree "$src" "$CURSOR_SKILLS_PROJECT/$skill_id"
+    copy_skill_tree "$src" "$CURSOR_SKILLS_HOME/$skill_id"
+    # Claude 侧 skill 发现路径与 Cursor 全局一并保持一致
+    copy_skill_tree "$src" "$CLAUDE_SKILLS_HOME/$skill_id"
   fi
   if want_target agents-skills; then
-    local dest="$AGENTS_SKILLS_ROOT/$skill_id"
-    mkdir -p "$dest"
-    cp "$src/SKILL.md" "$dest/"
-    [ -f "$src/INSTALL.md" ] && cp "$src/INSTALL.md" "$dest/"
-    [ -f "$src/checklist.md" ] && cp "$src/checklist.md" "$dest/"
-    if [ -d "$src/rules" ]; then
-      mkdir -p "$dest/rules"
-      cp "$src/rules"/*.md "$dest/rules/" 2>/dev/null || true
-    fi
-    echo "mirrored skill -> $dest"
+    copy_skill_tree "$src" "$AGENTS_SKILLS_ROOT/$skill_id"
   fi
 }
 

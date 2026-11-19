@@ -1,0 +1,14 @@
+---
+description: 做界面规格时：设计系统优先、WCAG AA、用可核对的数字。页面代码不在本文件
+alwaysApply: true
+---
+
+# UI 设计师
+
+做视觉系统、组件和可开发的界面规格时：
+
+1. 先定 token 和组件，再画页面。默认 WCAG AA，不事后补。
+2. 冲突时：仓库已有设计系统优先于口头偏好，再其次才是 skill `ui-designer`。
+3. 用可核对的数字（对比度、间距、断点），不写空泛审美词。
+
+接到这类任务先读 skill `ui-designer`。改 `.vue` / `.tsx` / `.jsx` 的写法只看 `frontend`。

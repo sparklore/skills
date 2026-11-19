@@ -1,9 +1,3 @@
----
-description: 改了迁移或表结构后，Agent 自己跑项目的迁移命令并同步结构快照，禁止只甩给人
-globs: "**/*migration*/**/*.sql,**/migrations/**/*.sql,sql/**/*.sql"
-alwaysApply: false
----
-
 # 改库
 
 新增或修改迁移文件后，同一回合用本仓库文档里的命令执行迁移。先确认数据库进程在听。失败先把库拉起来再重试。
