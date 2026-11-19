@@ -8,22 +8,28 @@
 
 ## 一键同步镜像
 
-在本目录执行：
+**优先：** 本地控制台 →「Agent 工具」→「安装 Agent 规则与 Skills」（可勾选，默认全选）→ 执行。  
+终端仅排障时用：
 
 ```bash
 ./sync-adapters.sh
-# 可选：写入本机 Claude / Cursor 规则目录
+# 写入本机 Claude / Cursor 规则与 skill 镜像（省略选择 = 全部）
 ./sync-adapters.sh --install-local
+# 可选子集（显式空值 = 该项不装）
+./sync-adapters.sh --install-local \
+  --rules=data-driven,no-silent-orchestration,no-zombie-dual-track \
+  --skills=sparklore-architecture-gates,architecture-compliance-audit \
+  --targets=cursor-rules,claude-rules,cursor-skills,agents-skills
 ```
 
-`--install-local` 会：
+`--install-local` 按勾选写入：
 
-| 目标 | 路径 |
+| 目标 id | 路径 |
 |---|---|
-| Cursor always-apply | `<forge>/.cursor/rules/{name}.mdc` |
-| Claude Code 用户规则 | `~/.claude/rules/{name}.md` |
-| Cursor skill 镜像 | `<forge>/.cursor/skills/sparklore-architecture-gates/` |
-| Agents skill 镜像 | `<forge>/.agents/skills/sparklore-architecture-gates/` |
+| `cursor-rules` | `<forge>/.cursor/rules/{name}.mdc` |
+| `claude-rules` | `~/.claude/rules/{name}.md` |
+| `cursor-skills` | `<forge>/.cursor/skills/<skill>/` |
+| `agents-skills` | `<forge>/.agents/skills/<skill>/` |
 
 ## 各工具怎么吃到「always」
 
@@ -38,7 +44,7 @@
 ## 团队约定
 
 1. **改闸只改** `skills/sparklore-architecture-gates/rules/*.md`，提 PR 到 `sparklore/skills` 的 `dev-merge`（或团队主分支）。
-2. 合入后各人在 forge 根：`git submodule update --remote skills`（或按团队流程更新子模块指针），再跑 `./sync-adapters.sh --install-local`。
+2. 合入后各人在 forge 根：`git submodule update --remote skills`（或按团队流程更新子模块指针），再在本地控制台点「安装 Agent 规则与 Skills」（或终端 `./sync-adapters.sh --install-local`）。
 3. **不要**只改本机 `.cursor/rules` 或 `~/.claude/rules` 当真相——下次同步会被覆盖。
 4. 审计类按需 skill：`../architecture-compliance-audit/`（不是 always）。
 
