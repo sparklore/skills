@@ -98,13 +98,22 @@ validate_subset rule "$RULES_SEL" "$ALL_RULES"
 validate_subset skill "$SKILLS_SEL" "$ALL_SKILLS"
 validate_subset target "$TARGETS_SEL" "$ALL_TARGETS"
 
-if [ "$INSTALL" -eq 1 ] && [ "$(count_words "$RULES_SEL")" -eq 0 ] && [ "$(count_words "$SKILLS_SEL")" -eq 0 ]; then
-  echo "nothing to install: pick at least one rule or skill" >&2
-  exit 1
-fi
-if [ "$INSTALL" -eq 1 ] && [ "$(count_words "$TARGETS_SEL")" -eq 0 ]; then
-  echo "nothing to install: pick at least one target" >&2
-  exit 1
+want_target() { in_list "$1" "$TARGETS_SEL"; }
+
+# 有效动作 = 选了规则且选了规则目标，或选了 skill 且选了 skill 目标。
+# 一个动作都没有时必须失败：否则控制台会把「什么都没装」显示成「完成」。
+if [ "$INSTALL" -eq 1 ]; then
+  ACTIONS=0
+  if [ "$(count_words "$RULES_SEL")" -gt 0 ]; then
+    if want_target cursor-rules || want_target claude-rules; then ACTIONS=$((ACTIONS + 1)); else echo "skip rules: no rule target (cursor-rules / claude-rules) selected"; fi
+  fi
+  if [ "$(count_words "$SKILLS_SEL")" -gt 0 ]; then
+    if want_target cursor-skills || want_target agents-skills; then ACTIONS=$((ACTIONS + 1)); else echo "skip skills: no skill target (cursor-skills / agents-skills) selected"; fi
+  fi
+  if [ "$ACTIONS" -eq 0 ]; then
+    echo "nothing to install: pick rules with a rule target, or skills with a skill target" >&2
+    exit 1
+  fi
 fi
 
 mkdir -p "$OUT_CURSOR"
@@ -134,8 +143,6 @@ CURSOR_RULES="$FORGE/.cursor/rules"
 CLAUDE_RULES="${HOME}/.claude/rules"
 CURSOR_SKILLS_ROOT="$FORGE/.cursor/skills"
 AGENTS_SKILLS_ROOT="$FORGE/.agents/skills"
-
-want_target() { in_list "$1" "$TARGETS_SEL"; }
 
 if want_target cursor-rules || want_target claude-rules; then
   mkdir -p "$CURSOR_RULES" "$CLAUDE_RULES"
