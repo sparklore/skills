@@ -1,14 +1,16 @@
 ---
-description: 做接口前先确认有未注释的可见入口在调用。没有入口的遗留接口默认不做
+description: Require uncommented visible entry before API work unless 「强制做这条、不管有没有入口」
 alwaysApply: true
 ---
 
-# 先有入口再做接口
+# Visible entry before API work
 
-开做每条接口前，在客户端源码里确认：有未注释的菜单、按钮或页面会走到它，并且该页确实发出这个请求。
+Before implementing an endpoint, confirm in client source that an **uncommented** menu, button, or page reaches it, and that page actually issues the request.
 
-下列情况默认不做：入口在注释里；按钮被注释；只有路由或客户端封装，没有页面调用。不要只信计划里写的「有入口」。
+Default skip when: the entry is only in comments; the button is commented out; only a route or client wrapper exists with no page caller. Do not trust a plan that merely claims 「有入口」 / "has an entry".
 
-入口路径由执行者自己查，写进结案说明。不要让用户口述菜单在哪。人闸以测试和请求结果为主。
+The executor finds the entry path and records it in the close-out notes. Do not ask the user to narrate where the menu is. Human gates prefer tests and real request evidence.
 
-用户当条消息写明「强制做这条、不管有没有入口」时才做。已经做了但没有入口的，记在进度里，不要再为它加下游表或任务。
+Do the work without a visible entry **only** when the user’s same message explicitly says 「强制做这条、不管有没有入口」 (force this item regardless of entry). If already implemented with no entry, log it in progress — do not add downstream tables or tasks for it.
+
+Chinese reference (not installed): `zh/visible-entry.md`

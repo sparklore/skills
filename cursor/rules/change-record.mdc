@@ -1,24 +1,49 @@
 ---
-description: 改了代码、配置或脚本后：步骤注释、CHANGELOG、回复末尾可复制的中文 commit message。纯问答跳过
+description: After code/config/script changes: comments (default none), CHANGELOG, copy-pasteable commit message. Skip for pure Q&A
 alwaysApply: true
 ---
 
-# 改动收尾
+# Change record
 
-纯问答、只读、没产生 diff：下面三项都不用。本文件是注释、变更日志、commit 文案的唯一出处。
+Skip all three sections below for pure Q&A / read-only work with no diff. This file is the single source for comments, CHANGELOG, and commit-message guidance.
 
-## 注释
+Chinese reference (backup only; not installed to live mirrors): `zh/change-record.md`
 
-新增或改动的函数、复杂分支写注释。函数外一行写业务意图；步骤写在对应代码旁边。写前置条件和边界，不复述代码字面意思。getter、纯透传、和周围完全同模式的片段可省略。
+## Comments
+
+**Do not add or rewrite code comments by default.** Readable code is the deliverable; comments are not.
+
+### Always forbidden (common agent failure modes)
+
+- Restating what the code already does ("iterate the list", "return the result")
+- **Historical narrative** (who said what, which PR, which review, "temporary until later" timelines)
+- Promoting **one-off feedback** into a standing rule (anti-example: `// Lauren said not to do this`)
+- Step-by-step comments on **hot paths**, frequently changed business branches, or ad-hoc fixes (they rot faster than the code and mislead more)
+- Ceremonial function headers or inline notes added to look thorough
+
+### Allowed only when all of the following hold
+
+Before writing a comment, ask: if this line were deleted, would a future reader misuse the API or hit a known footgun within months? Write it only if the answer is yes — and only if **all** of these are true:
+
+1. It states a **stable invariant** (contract, precondition, safety/concurrency boundary, or why a seemingly obvious alternative is incorrect)
+2. The surrounding code is expected to be **rarely changed** (stable surface), not a walkthrough of this change
+3. It explains **why** in one short sentence — never what/how, never a person's name, never a specific PR
+
+Allowed shape: `// CAS: final failure must return error; never swallow as success`  
+Forbidden shapes: `// per Lauren's review` / `// fix yesterday's nil deref`
+
+Skip comments on getters, pure pass-throughs, and fragments that already match the surrounding pattern.
+
+If the user **explicitly** asks in the same message to comment a specific place, add only that place — historical narrative remains forbidden.
 
 ## CHANGELOG
 
-仓库有 `CHANGELOG.md` 时，在 `[未发布]` 或 `[Unreleased]` 下追加。中文，写模块、做了什么、1～3 个关键路径。仅文档或规则放文档或维护小节。仓库没有该文件则跳过。
+When the repo has `CHANGELOG.md`, append under `[未发布]` or `[Unreleased]`. Write the entry in Chinese: module, what changed, 1–3 key paths. Docs/rules-only → docs or maintenance subsection. Skip if the file does not exist.
 
-## Commit message（只给文案，不执行 commit / push）
+## Commit message (draft only; do not commit / push)
 
 ```text
-<type>(可选scope): <中文简述>
+<type>(optional-scope): <Chinese summary>
 ```
 
-type：`feat` `fix` `docs` `style` `refactor` `perf` `chore` `test`。简述约 50 字，不加句号。多仓库分开写。和未提交的其他改动混在一起时，注明建议 stage 的文件。主题和本轮 CHANGELOG 一致。
+type: `feat` `fix` `docs` `style` `refactor` `perf` `chore` `test`. Summary ≈ 50 characters, no trailing period. Separate repos → separate messages. If mixed with unrelated uncommitted work, note which files to stage. Theme must match this round's CHANGELOG entry.

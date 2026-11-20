@@ -1,22 +1,24 @@
-# 编码
+# Engineering
 
-简单改动写短计划，做完即停。要不要先做架构设计只看 `architecture`。过不过、验收怎么写只看 `delivery-gate`。
+For simple changes: short plan, then stop when done. Whether a design note is required → `architecture`. Pass/fail and how to report acceptance → `delivery-gate`.
 
-## 动手前
+## Before editing
 
-1. 写清范围、数据流、边界、**不会改什么**。需求不清最多问 3 个。
-2. 先搜同类实现。能扩既有函数就扩。没有第二处调用方，不抽 helper / 基类 / 新分层。
-3. 新增文件、函数、表、路由时，说明现有代码缺什么。
-4. 不猜 API、参数、配置、第三方行为。查过仍不确定，写明假设和风险。
+1. State scope, data flow, boundaries, and **what you will not change**. If requirements are unclear, ask at most 3 questions.
+2. Search for similar implementations first. Extend an existing function when you can. Do not extract a helper / base class / new layer without a second caller.
+3. When adding a file, function, table, or route, state what existing code lacks.
+4. Do not guess APIs, parameters, config, or third-party behavior. If still uncertain after looking it up, state assumptions and risks.
 
-## 改的时候
+## While editing
 
-- 跟现有分层和写法。禁止无关重写、改名、顺手改别的模块契约。
-- 不为假想扩展加依赖、抽象、配置。能一行看懂就一行。
+- Follow existing layering and style. No unrelated rewrites, renames, or drive-by contract changes in other modules.
+- Do not add dependencies, abstractions, or config for hypothetical extension. Prefer one readable line when one line suffices.
 
-## 测试
+## Testing
 
-- 新逻辑或改过的分支加有效测试，并实跑相关用例。用户没要求，不跑全库。
-- 没跑过的检查，禁止说「已测试 / 已验证 / 可以运行」。禁止改断言或夹具来凑绿。
-- 收尾看编译或 lint、错误路径、有没有 N+1 或无界循环。方案不显然时用 1～3 行写 tradeoff。
-- 会往库里插数据的测试怎么命名、怎么删，只看 `test-data`。
+- Add effective tests for new logic or changed branches, and actually run the relevant cases. Do not run the full suite unless the user asks.
+- Never claim 「已测试」 / 「已验证」 / 「可以运行」 ("tested" / "verified" / "ready to run") for checks you did not run. Do not weaken assertions or fixtures to force green.
+- Before finishing: compile or lint, error paths, N+1 or unbounded loops. When the approach is non-obvious, write a 1–3 line tradeoff.
+- Naming and cleanup for tests that insert DB rows → `test-data` only.
+
+Chinese reference (not installed): `zh/engineering.md`

@@ -1,14 +1,16 @@
 ---
-description: 做界面规格时：设计系统优先、WCAG AA、用可核对的数字。页面代码不在本文件
+description: Tokens/components first; WCAG AA; checkable numbers; page code is frontend
 alwaysApply: true
 ---
 
-# UI 设计师
+# UI designer
 
-做视觉系统、组件和可开发的界面规格时：
+When producing visual systems, components, or implementable UI specs:
 
-1. 先定 token 和组件，再画页面。默认 WCAG AA，不事后补。
-2. 冲突时：仓库已有设计系统优先于口头偏好，再其次才是 skill `ui-designer`。
-3. 用可核对的数字（对比度、间距、断点），不写空泛审美词。
+1. Define tokens and components before laying out pages. Default WCAG AA — do not bolt it on afterward.
+2. On conflict: the repo’s design system beats verbal preference; then skill `ui-designer`.
+3. Use checkable numbers (contrast, spacing, breakpoints) — not vague aesthetic adjectives.
 
-接到这类任务先读 skill `ui-designer`。改 `.vue` / `.tsx` / `.jsx` 的写法只看 `frontend`。
+On such tasks, read skill `ui-designer` first. How to edit `.vue` / `.tsx` / `.jsx` → `frontend` only.
+
+Chinese reference (not installed): `zh/ui-designer.md`

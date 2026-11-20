@@ -1,55 +1,59 @@
 ---
-description: 数据驱动铁律：禁止业务硬编码、专用路由/capability、往冻结段加行；缺能力先改数据再加通用构件
+description: Data-driven 数据驱动: no business hardcoding, dedicated routes/capabilities, or freeze-section growth; data first
 alwaysApply: true
 ---
 
-# 数据驱动（Zero Use-Case Hardcoding）
+# 数据驱动 / Data-driven (Zero Use-Case Hardcoding)
 
-完整条文见 `docs/02-rules-data-driven.md` 与 `AGENTS.md` §5。本文件只写 **Agent 动手闸**。
+Full text: `docs/02-rules-data-driven.md` and `AGENTS.md` §5. This file is only the **Agent action gate**（动手闸）.
 
-## 两问（都答「是」才算合格）
+Chinese reference (not installed): `skills/claude/rules/zh/data-driven.md`
 
-1. 删掉某个应用（合集 JSON），Go / JS **一行都不用改**？
-2. 新增一个应用，Go / JS **一行都不用加、不用重新编译**？
+## 两问 / Two questions (both must be「是」/ yes to pass)
 
-任一为「否」→ 停手，先警告用户，再给数据驱动替代方案。**禁止静默照写。**
+1. Delete one app (collection JSON) — does Go / JS need **zero** line changes?
+2. Add one app — does Go / JS need **zero** new lines and **no** rebuild?
 
-## 必须是数据（合集 / QuestFlow / Record / WidgetDSL body）
+If either is 「否」 / no → stop, warn the user, propose a data-driven alternative. **Do not silently implement the hardcoded request.**
 
-- 业务工作流步骤、提示词、输出 Schema、写回规则
-- 页面布局、看板 / 矩阵 / 表单 / 列表、领域字段与枚举
-- Foundry 导入 / 晋升 / 修复等**业务编排顺序**
+## Must be data (collection / QuestFlow / Record / WidgetDSL body)
 
-## 允许留在 Go / JS（引擎）
+- Business workflow steps, prompts, output schemas, write-back rules
+- Page layout, board / matrix / form / list, domain fields and enums
+- Foundry import / promote / repair and other **business orchestration order**
 
-- 通用状态机、校验器、`genloop` 结构化自愈（策略在公开契约）
-- 通用 Record / Bridge / Quest 入口（非业务名）
-- 设备 / 媒体 / OS 桥接 capability（相机、推流、云台等）
-- 纯工具（骨架提取、X-Ray 诊断框架、沙盒文件）——**不含业务 prompt 与流程顺序**
+## Allowed in Go / JS (engine)
 
-## 一律禁止（无架构豁免）
+- Generic state machines, validators, `genloop` structured self-heal (policy in a public contract)
+- Generic Record / Bridge / Quest entry points (no business names)
+- Device / media / OS bridge capabilities (camera, streaming, gimbal, etc.)
+- Pure tools (skeleton extract, X-Ray diagnostics framework, sandbox files) — **no business prompts or flow order**
 
-- 新增业务 Go `capability`、`/api/<feature>/*`、`widgetdsl` 业务 `kind` / 结构体
-- 在 Go/JS 硬编码业务中文/英文 **system prompt**、领域评分公式、术语黑名单当产品规则
-- **搬家冒充合规**：把 `admin.go` 拆成 `admin_foundry.go` 仍保留业务状态机 / 专用路由
-- **往 `freeze.txt` 冻结段加行**或给业务大文件加 `server-file` 白名单让测试变绿（冻结段只能删）
-- 应用自带脚本写业务规则（换地方硬编码）
+## Always forbidden (no architecture exemption)
 
-## 缺能力时的顺序（不可跳）
+- New business Go `capability`, `/api/<feature>/*`, or `widgetdsl` business `kind` / structs
+- Hardcoding business Chinese/English **system prompts**, domain scoring formulas, or term blacklists as product rules in Go/JS
+- **Relocation disguised as compliance**: splitting `admin.go` into `admin_foundry.go` while keeping business state machines / dedicated routes
+- **Adding lines to the `freeze.txt` freeze section** or whitelisting business mega-files as `server-file` to green tests (freeze section may only shrink)
+- App-local scripts encoding business rules (hardcoding elsewhere)
 
-1. 改合集 / QuestFlow / Record 形状  
-2. 加**第二个应用也能用**的通用构件（名字与字段无业务词）  
-3. 触及事务 / 并发 / 写回 → 先写 `docs/design/` 短设计  
+## When capability is missing (order is mandatory)
 
-## 拦截话术（必须原样停）
+1. Change collection / QuestFlow / Record shape  
+2. Add a **generic** building block a second app can also use (no business words in names/fields)  
+3. If it touches transactions / concurrency / write-back → short design in `docs/design/` first  
+
+## Stop quote (must be verbatim)
 
 > 该方案违反「Data-Driven Quest + Declarative WidgetDSL」铁律。应把流程放进 `extensions/*.json` 的 QuestFlow，数据走 `userdata.apply` / 通用 Record；Go 只留原子工具。需要架构豁免请明确说「豁免」并登记 `docs/04` 台账。
 
-## 门禁（必要但不充分）
+User exemption trigger phrase: 「豁免」 (must keep this Chinese token).
+
+## Gate tests (necessary but not sufficient)
 
 ```bash
 go test ./internal/depscheck/ -run TestUsecaseCodeDoesNotGrow -count=1
 cd sparklore-clients && go test ./internal/server/ -run TestUsecaseCodeDoesNotGrow -count=1
 ```
 
-只扫文件名 / 路由前缀，**不看文件内容**。内容审查仍按上面两问。
+These scan filenames / route prefixes only — **not file contents**. Content review still uses the two questions above.

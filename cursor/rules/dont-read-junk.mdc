@@ -1,12 +1,14 @@
 ---
-description: 禁止读取依赖目录、构建产物、日志、大批量测试数据
+description: Do not read vendor/build/logs/bulk test dumps
 alwaysApply: true
 ---
 
-# 禁止读噪声路径
+# Do not read junk paths
 
-默认不扫：`vendor/`、`node_modules/`、`dist/`、`build/`、`coverage/`、`*.min.js`、`*.map`、`logs/`、`tmp/`、`*.log`、`**/testdata/**`、`**/fixtures/**`、大批量 CSV/JSON dump。
+By default do not scan: `vendor/`, `node_modules/`, `dist/`, `build/`, `coverage/`, `*.min.js`, `*.map`, `logs/`, `tmp/`, `*.log`, `**/testdata/**`, `**/fixtures/**`, bulk CSV/JSON dumps.
 
-例外：用户点名的单个文件；改测试时只读对应测试源码；依赖清单（如 `go.mod`、`package.json`）可读，lockfile 只在查版本冲突时搜单行。
+Exceptions: a single file the user names; when editing tests, only the matching test sources; dependency manifests (e.g. `go.mod`, `package.json`) are OK; lockfiles only when resolving a version conflict (single-line search).
 
-与 `.cursorignore` 冲突时以更严为准。
+If this conflicts with `.cursorignore`, the stricter rule wins.
+
+Chinese reference (not installed): `zh/dont-read-junk.md`

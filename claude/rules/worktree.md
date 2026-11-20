@@ -1,7 +1,9 @@
-# 工作树起点
+# Worktree starting point
 
-1. 新建工作树、新会话，起点只能是我主检出**当前所在的分支**。先查：`git -C <主检出> branch --show-current`。用 `start_session` 时把它填进 `source_branch`，不靠默认值。
-2. 禁止不经我同意从 `main` 或其他默认分支切工作树。我当前分支就是 `main` 时除外。
-3. 会话一开始就核对：本工作树的 HEAD 是否在我当前分支的最新提交上，或者从它分出来。不是的话，先停下告诉我差多少提交，再在本工作树新开一个分支，起点用我的当前分支，然后再干活。禁止在落后的起点上审计、写代码或写文档。
-4. 我当前分支已经在主检出里检出了，工作树里不要再检出同名分支，要用它当起点新开一个分支。
-5. 子模块在工作树里没初始化时，只读的话可以直接读主检出里的子模块；要改子模块，先问我。
+1. New worktrees / new sessions must start from the branch currently checked out in **your** main working tree. First run: `git -C <main-checkout> branch --show-current`. When using `start_session`, put that into `source_branch` — do not rely on defaults.
+2. Do not create a worktree from `main` or another default branch without the user’s consent — except when the user’s current branch *is* `main`.
+3. At session start, verify this worktree’s HEAD is on (or branched from) the tip of the user’s current branch. If not: stop, report how many commits behind, create a new branch in this worktree from the user’s current branch, then proceed. Do not audit, code, or write docs from a stale base.
+4. If the user’s current branch is already checked out in the main tree, do not check out the same branch name again in the worktree — branch from it under a new name.
+5. If submodules are uninitialized in the worktree: read-only work may read the main checkout’s submodules; changing a submodule requires asking the user first.
+
+Chinese reference (not installed): `zh/worktree.md`

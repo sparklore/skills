@@ -1,12 +1,14 @@
 ---
-description: 接口和联调禁止编造业务数据。没有记录时返回空；形状对齐真实样例
+description: No invented business data; empty is valid; shapes match real samples
 alwaysApply: true
 ---
 
-# 禁止伪造业务数据
+# No fabricated business data
 
-没有行、没有行情、没有内容时，空就是合法结果：列表用空数组，单对象用 `null`，还没有数据源的可选字段用 `null`。禁止编造名称、价格、订单、涨跌、通知来撑页面。
+No rows, no quotes, no content → empty is a valid result: lists as empty arrays, single objects as `null`, optional fields with no source yet as `null`. Do not invent names, prices, orders, price moves, or notifications to fill a page.
 
-字段不清楚时，对照现有库表或用户给出的一条真实响应。有正式导出就用导出行。目录在库里的读库；实时数据还没接上的字段留空。
+When a field shape is unclear, match the live schema or one real response the user provides. Prefer official exports when they exist. Catalog data that lives in the DB → read the DB; fields for live feeds not yet wired → leave empty.
 
-联调种子只用正式导出，或项目里明确标注的夹具。测试插入的行怎么删，只看 `test-data`。
+Integration seeds: official exports only, or fixtures the repo explicitly labels. How to delete rows a test inserted → `test-data`.
+
+Chinese reference (not installed): `zh/no-fake-data.md`

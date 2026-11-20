@@ -31,32 +31,33 @@ GATES = {
 }
 
 DESC = {
-    "audit-evidence": "审计证据分级：每条发现标 G1 已确认 / G2 读过链 / G3 推断；G3 不得带预估或波次；差集不是结论",
-    "data-driven": "数据驱动铁律：禁止业务硬编码、专用路由/capability、往冻结段加行；缺能力先改数据再加通用构件",
-    "no-silent-orchestration": "禁止在 Go/JS 里静默加编排、重试、兜底；动手前必须如实说明为什么、好处、为何不进 QuestFlow",
-    "no-zombie-dual-track": "禁止僵尸代码与双轨：生产零调用却靠测试/迁移/开关续命；删旧不搬家；单真相源",
-    "architecture": "涉及数据所有权、事务、鉴权、跨服务、事件、定时、缓存时先短设计，不留无期限的过渡实现",
-    "change-record": "改了代码、配置或脚本后：步骤注释、CHANGELOG、回复末尾可复制的中文 commit message。纯问答跳过",
-    "codegraph": "项目装了 CodeGraph 时，结构问题先用 codegraph_explore，再对具体行读文件",
-    "db-change": "改了迁移或表结构后，Agent 自己跑项目的迁移命令并同步结构快照，禁止只甩给人",
-    "delivery-gate": "验收回复格式与人闸。阶段未 PASS 不进下一步；整单 PASS 后等用户「验收通过」",
-    "dont-read-junk": "禁止读取依赖目录、构建产物、日志、大批量测试数据",
-    "engineering": "日常编码：短计划、最小 diff、复用优先、相关测试实跑、不臆造不谎报",
-    "engineering-guardrails": "核心工程约束、任务执行与自动验证规范",
-    "frontend": "改前端页面时跟现有页面结构、设计令牌和请求层。禁止改接口形状来迁就界面",
+    "audit-evidence": "Evidence grades G1 已确认 / G2 读过链 / G3 推断; no estimates on G3; set-diff is not causation",
+    "data-driven": "Data-driven 数据驱动: no business hardcoding, dedicated routes/capabilities, or freeze-section growth; data first",
+    "no-silent-orchestration": "No silent orchestration/retry/fallback in Go/JS; disclose why before edit; wait for 「可以改」",
+    "no-zombie-dual-track": "No zombies/dual-track: prod-zero calls kept alive by tests; relocate≠delete; single SSoT",
+    "architecture": "Short design first for ownership/txn/auth/cross-service/events/schedulers/cache; no open-ended bridges",
+    "change-record": "After code/config/script changes: comments (default none), CHANGELOG, copy-pasteable commit message. Skip for pure Q&A",
+    "codegraph": "When .codegraph/ exists, use codegraph_explore for structure before reading files",
+    "db-change": "After migrations, Agent runs this repo's migrate command and syncs schema snapshot; do not only ask the user",
+    "delivery-gate": "Acceptance reply format and human gates; wait for 「验收通过」; Chinese reply headings",
+    "dont-read-junk": "Do not read vendor/build/logs/bulk test dumps",
+    "engineering": "Daily coding: short plan, minimal diff, reuse first, run related tests, no fake verified claims",
+    "engineering-guardrails": "Align before code; type-safe; mandatory local verification before ending the turn",
+    "frontend": "Follow existing page patterns, tokens, API layer; do not reshape APIs for UI convenience",
     "graphify": "graphify knowledge graph context",
-    "legacy-align": "对齐旧系统时按真实读路径实现。可以优化，但必须写下结构差异",
-    "no-fake-data": "接口和联调禁止编造业务数据。没有记录时返回空；形状对齐真实样例",
-    "session-plan": "复杂任务先 Charter；执行 plan 先签字；同一会话最多跑 1 波；换会话时给填好的开工指令",
-    "test-data": "集成测试造数用短名、跑完删干净、删除失败要报出来。测试行不能留在联调库当种子",
-    "ui-designer": "做界面规格时：设计系统优先、WCAG AA、用可核对的数字。页面代码不在本文件",
-    "visible-entry": "做接口前先确认有未注释的可见入口在调用。没有入口的遗留接口默认不做",
+    "legacy-align": "When aligning to legacy, preserve cache-key semantics; document behavior diffs",
+    "no-fake-data": "No invented business data; empty is valid; shapes match real samples",
+    "session-plan": "Charter first; verifiable slices; sign-off with C=是; one wave per chat; filled handoff block",
+    "test-data": "Short unique test names; delete before close; fail on delete errors; no seed litter",
+    "ui-designer": "Tokens/components first; WCAG AA; checkable numbers; page code is frontend",
+    "visible-entry": "Require uncommented visible entry before API work unless 「强制做这条、不管有没有入口」",
 }
 
 CLAUDE_README = """# Claude 规则包（远程仓备份里的源）
 
 - **四闸**：SSoT 在 `../../sparklore-architecture-gates/rules/`；本目录同名文件由 `sync-tool-rules.sh` 生成，禁止手改。
-- **其余 `.md`**：非闸 SSoT（纯 Markdown，不要加 Cursor frontmatter）。
+- **其余 `.md`**：非闸 SSoT（纯 Markdown，不要加 Cursor frontmatter）。**执行正文为英文**；用户触发词保留中文（如「验收通过」「可以改」「C=是」「豁免」）。
+- **`zh/`**：中文参考备份，**不**安装到活镜像；Agent 只读顶层英文 `.md`。
 - **`worktree.md`**：仅 Claude。
 - 活镜像在 `~/.claude/rules`（与 `~/.cursor/rules`、项目 `.cursor/rules` 必须一致）。安装：`../../install-local.sh`。
 """

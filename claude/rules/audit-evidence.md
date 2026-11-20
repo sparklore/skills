@@ -1,75 +1,77 @@
-# 审计证据分级（Evidence Grades）
+# Audit evidence grades（审计证据分级）
 
-适用于任何审计报告、台账、债务清单、合规复查结论（`docs/*-ledger-*.md`、审计回复、PR 评审结论）。
+Applies to any audit report, ledger, debt list, or compliance re-check (`docs/*-ledger-*.md`, audit replies, PR review conclusions).
 
-分工：`delivery-gate` 管怎么汇报与什么时候算过；三闸管**发现的内容**违不违规；本文件管**这条发现的证据够不够下结论**。
+Division of labor: `delivery-gate` owns how to report and when work passes; the three architecture gates own whether a finding’s **content** violates rules; this file owns whether **evidence is strong enough** to conclude.
 
-## 三档（每条发现必填，写在表格第一列）
+Chinese reference (not installed): `skills/claude/rules/zh/audit-evidence.md`
 
-| 档 | 含义 | 取得方式 |
+## Three grades (required on every finding — first table column)
+
+| Grade | Meaning | How obtained |
 |---|---|---|
-| `G1 已确认` | 命令跑过，输出贴得出 | grep / 测试 / 构建的真实输出 |
-| `G2 读过链` | 顺调用链读过两端 | 可见入口 → handler → 被调方 → 返回值，每跳记 `file:line` |
-| `G3 推断` | 只有间接证据，或只读了一处 | 单条 grep 命中、类比、记忆 |
+| `G1 已确认` | Command ran; output can be pasted | Real grep / test / build output |
+| `G2 读过链` | Both ends of the call chain were read | Visible entry → handler → callee → return value; each hop `file:line` |
+| `G3 推断` | Indirect evidence only, or only one site read | Single grep hit, analogy, memory |
 
-一行只记一个声明。「位置」是 G1 而「正解方向」是 G3 时**拆成两行**，禁止共用一个档。
+One claim per row. If “location” is G1 but “fix direction” is G3 → **split into two rows**; do not share one grade.
 
-## 表格必填两列（`G2` 的留痕位）
+## Two mandatory table columns (`G2` audit trail)
 
-证据档之外，每条发现还必须有这两格：
+Besides the evidence grade, every finding needs these cells:
 
-| 列 | 填什么 | 没走过怎么填 |
+| Column | What to write | If not walked |
 |---|---|---|
-| **入口→出口** | 调用链两端，每端带 `file:line`。跨端写「UI → handler → 返回值」，引擎内部写「调用方 → 被调方」 | 写 **未走链**，不许留空 |
-| **两端字段名** | 前端期望的字段 vs 后端实返的键 | 引擎内部写「不适用」；跨端没核过写 **未走链** |
+| **入口→出口** | Both ends of the call chain, each with `file:line`. Cross-tier: 「UI → handler → 返回值」; engine-internal: 「调用方 → 被调方」 | Write **未走链** — never leave blank |
+| **两端字段名** | Fields the frontend expects vs keys the backend actually returns | Engine-internal: 「不适用」; cross-tier not checked: **未走链** |
 
-**填「未走链」的行不得单独支撑 Must fix 或波次。** 要排期先把它走成 `G2`。
+**Rows marked 未走链 must not alone justify Must-fix or a wave.** Raise them to `G2` before scheduling.
 
-为什么要这两列：`G2` 的定义本来就是「读过链」，但定义写在规则里、表格里没有对应的格，于是「有没有真读」不可核，`G2` 成了自我声明。37 号 R2 被判成「前端死调用、删三处即可」，正是因为没有「两端字段名」这一格——`enrich_job` vs `enrich_run_id`、`async_running` vs `workflow_async` 的错配，**填过一次就会当场暴露**。2026-11-19 给 37 号补上这两列后，17 条里立刻露出 **8 条「未走链」，其中 5 条标着 `G1`**；那 5 条的 `G1` 指的是「位置已确认」而非「怎么改已确认」，正是上一行「一行只记一个声明」被违反的实例。
+Why these columns: `G2` means “chain was read”, but if the table has no cells for that, “was it really read?” cannot be audited and `G2` becomes self-certified. Issue 37 R2 was judged “frontend dead call, delete three sites” because there was no **两端字段名** cell — mismatches like `enrich_job` vs `enrich_run_id`, `async_running` vs `workflow_async` would have surfaced immediately. After adding the columns on 2026-11-19, 8 of 17 rows showed **未走链**, including 5 labeled `G1` — those `G1`s meant “location confirmed”, not “fix confirmed”, which violates “one claim per row”.
 
-## 一律禁止（任一即违规债）
+## Always forbidden (any one = violation debt)
 
-| 禁止 | 现网反例 |
+| Forbidden | Live anti-example |
 |---|---|
-| `G3` 行写**预估、波次、工期、方案选择**；只许写「待核验 + 下一步跑什么」 | 37 号 R1 写了「须先查全部调用方」，同表仍给「约 1 行 / P0」；实际两个调用方都 `_ =` 丢弃，`OnEvent` 还无返回值 |
-| 把**集合差集**当因果结论（前端有 / 后端无、文件存在 / 零调用）。差集只支持「少了什么」，不支持「删掉即可」 | 37 号 R2 由路由差集判成「死调用，删三处即可」；实际按钮打的是活路由 `/api/admin/foundry/import`，后端仍起 enrich run |
-| 前置写了却没跑，还让它影响任何数字 | 同上 R1 |
-| 引规则名而不读规则指向文件的**段头与作用域** | 37 号 R3 把「冻结段只能删」套在 `freeze.txt` 的**引擎段**行上，而引擎段写的是「可以增加，但要在 PR 里说明」 |
-| 工具 0 命中就写「干净」，而没先证明工具扫到了目标 | 审计 checklist 全部以 `sparklore-clients/` 为相对路径。**2026-11-19 实测更正**：裸 `rg`/`grep` 扫不存在的路径退 **2**、会红，并不假绿；真正骗人的是接了 `\| wc -l` 的形式——命中数 0、退出码 0，「没扫」与「干净」完全同形，而那正是 checklist 与日常复扫最常用的写法。另一例：`go test -run <打不中的名字>` 输出 `ok … [no tests to run]` 仍**退出 0** |
-| 整个文件或子系统一次性豁免。豁免必须按**调用链**写，点名豁免哪条链 | 37 号把 `app.js` 12 处定时器整体判成非问题，漏掉 enrich HUD 的轮询 + 前端重试编排 |
-| 只扫路由与文件名就宣称契约无误 | 37 号漏了响应字段错配：前端等 `enrich_job` / `ai_mode:'async_running'`，后端两者都不存在 |
+| A `G3` row carrying **estimates, waves, schedule, or option choice**; only 「待核验 + 下一步跑什么」 | Issue 37 R1 said “must find all callers” yet still wrote “~1 line / P0”; both callers discarded with `_ =`, and `OnEvent` has no return |
+| Treating a **set difference** as causal (frontend has / backend lacks, file exists / zero calls). Diffs support “what is missing”, not “delete and done” | Issue 37 R2: route diff → “dead call, delete three”; the button hits live `/api/admin/foundry/import` and backend still starts enrich run |
+| Writing a prerequisite and never running it, yet letting it affect any number | Same R1 |
+| Citing a rule name without reading the target file’s **section header and scope** | Issue 37 R3 applied “freeze section may only shrink” to `freeze.txt` **engine-section** lines, which say “may grow if explained in the PR” |
+| Writing 「干净」 / "clean" on zero tool hits without proving the tool scanned the target | Audit checklists used relative `sparklore-clients/`. **2026-11-19 measurement**: bare `rg`/`grep` on a missing path exits **2** (red), not fake-green; the real liar is `\| wc -l` — hit count 0, exit 0, “not scanned” looks identical to “clean”. Also: `go test -run <name that matches nothing>` prints `ok … [no tests to run]` and still **exits 0** |
+| One-shot exemption of a whole file or subsystem. Exemptions must be **per call chain**, naming which chain | Issue 37 cleared twelve `app.js` timers as fine and missed enrich HUD polling + frontend retry orchestration |
+| Claiming contracts are correct after scanning only routes and filenames | Issue 37 missed response-field mismatch: frontend expects `enrich_job` / `ai_mode:'async_running'`; backend has neither |
 
-## 允许
+## Allowed
 
-- 标 `G3` 只登记为「待核验」，并写明升档要跑什么
-- 标「未能核验」并说明为什么跑不了（缺环境、缺权限、要连库、要真机）
-- 引用已有台账条目当 `G1`，前提是贴出那条的文档号与小节号
+- Label `G3` as 「待核验」 only, and state what to run to raise the grade
+- Label 「未能核验」 and why (no env, no auth, needs DB, needs device)
+- Cite an existing ledger entry as `G1` only if you paste that doc’s id and section
 
-## 升档的最小动作
+## Minimum upgrade actions
 
-| 从 | 做什么 |
+| From | Do |
 |---|---|
-| `G3`→`G2` | 从可见入口正向走到后端返回值，每跳记 `file:line`；**并把两端字段名逐字填进表**（这一步是必做，不是「顺手」——漏掉它正是 R2 被误判的那一跳） |
-| →`G1` | 把命令与输出贴进报告 |
+| `G3`→`G2` | Walk forward from visible entry to backend return; record every hop `file:line`; **fill both field-name columns verbatim** (required — skipping this is how R2 was misjudged) |
+| →`G1` | Paste the command and its output into the report |
 
-## 拦截话术（必须原样停）
+## Stop quote (must be verbatim)
 
 > 这条是 `G3 推断`，按 `audit-evidence` 不能带预估或波次。要么先顺调用链升到 `G2`（我可以现在走），要么只登记为「待核验」。
 
-## 已落地为机器闸的三条（不再靠自觉）
+## Three machine gates already shipped (not conscience-based)
 
-纯文字规则实测挡不住事——本文「现网反例」列基本取自**违反本文**的记录。以下三条已做成 `PreToolUse` 闸，本体与回归测试在 forge `scripts/hooks/`（`bash-guard.py` / `bash-guard-test.sh` / `README.md`）：
+Pure text rules failed in the wild — the “live anti-example” column mostly comes from **violations of this file**. These three are `PreToolUse` gates in forge `scripts/hooks/` (`bash-guard.py` / `bash-guard-test.sh` / `README.md`):
 
-| 闸 | 拦什么 |
+| Gate | Blocks |
 |---|---|
-| **M1** | `go test` 带 `-run` 但不带 `-v` |
-| **M2** | 用相对路径 `sparklore-clients/` 扫描，而当前检出没装 clients |
-| **M3** | `pkill` / `killall` 按模式杀进程 |
+| **M1** | `go test` with `-run` but without `-v` |
+| **M2** | Scanning with relative `sparklore-clients/` when this checkout has no clients tree |
+| **M3** | `pkill` / `killall` by pattern |
 
-所以本文「工具 0 命中就写干净」这一条，在 M1/M2 覆盖的范围内**已有机器拦截**；本文继续管它们覆盖不到的部分（人工判断、表格怎么填、差集能不能当结论）。闸故意不设 bypass 开关，三条都有正当替代写法。
+So “zero hits ⇒ clean” is already machine-blocked where M1/M2 apply; this file still covers what they do not (human judgment, table filling, set-diff as causation). No bypass switch; each gate has a legitimate alternative command shape.
 
-## 与其它规则
+## Related rules
 
-- 怎么汇报、验收步骤怎么写 → `delivery-gate`
-- 审计跑什么命令、反向链怎么走 → skill `architecture-compliance-audit`
-- 发现的内容本身违不违规 → `data-driven` / `no-silent-orchestration` / `no-zombie-dual-track`
+- How to report / acceptance steps → `delivery-gate`
+- What audit commands to run / reverse chain → skill `architecture-compliance-audit`
+- Whether finding content violates architecture → `data-driven` / `no-silent-orchestration` / `no-zombie-dual-track`

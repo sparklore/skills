@@ -1,36 +1,42 @@
 ---
-description: 复杂任务先 Charter；执行 plan 先签字；同一会话最多跑 1 波；换会话时给填好的开工指令
+description: Charter first; verifiable slices; sign-off with C=是; one wave per chat; filled handoff block
 alwaysApply: true
 ---
 
-# 会话与 Plan
+# Session and Plan
 
-## Charter（复杂任务开工前）
+## Charter (before complex work starts)
 
-多文件、架构、数据模型、跨服务、大规模文档，或用户没给可写/禁止路径时，先写：
+When the task spans many files, architecture, data models, cross-service work, large docs, or the user did not give writable / forbidden paths, write first:
 
-1. 唯一目标（一句）
-2. 可写 / 只读 / 禁止路径
-3. 交付物清单
-4. 验收命令
-5. 模式：Plan only 或 Agent execute
+1. Single goal (one sentence)
+2. Writable / read-only / forbidden paths
+3. Deliverables list
+4. Acceptance commands
+5. Mode: Plan only or Agent execute
 
-用户说「用默认 charter」或已贴完整 charter，确认一句再开始。用户说验收门时，Charter 与 `delivery-gate` 一起用。
+If the user says 「用默认 charter」 / "use the default charter", or already pasted a full charter: confirm in one sentence, then start. When the user invokes the acceptance gate, use Charter together with `delivery-gate`.
 
-## 签字门（改文件前）
+## Verifiable slices（可验收切片）
 
-消息含 `Implement the plan`、`按计划执行`、`执行 plan`，或附 `.plan.md` 要求开干：
+Split complex Plans into independently verifiable slices (one call chain / one ledger debt / one green acceptance command). At most 8 todos per wave. Do not default to horizontal mega-packs (「后端 → 前端 → 测试」 / "backend → frontend → tests"). Pure contract / zombie deletion / collection-data work may be a single-layer slice but must still carry its own acceptance. Over the limit → split waves or open a new chat before executing.
 
-先输出范围表（会改 | 不会改 | 风险 Top3）、与现有架构决定的冲突、回滚命令，以及 A 范围对吗 / B 验收够吗 / C 可以执行吗。
+## Sign-off gate (before editing files)
 
-用户写出 **C=是**（或「可以执行」「开干」「直接执行无需再问」）之前，禁止改文件、commit、执行会改环境的命令。只读可以。批准后不改 plan 文件本身，除非用户要求。
+When the message contains `Implement the plan`, 「按计划执行」, 「执行 plan」, or attaches a `.plan.md` asking to start:
 
-## 一会话一波
+First output a scope table (will change | will not change | top 3 risks), conflicts with existing architecture decisions, rollback commands, and A 范围对吗 / B 验收够吗 / C 可以执行吗 (A scope OK? / B acceptance enough? / C OK to execute?).
 
-带 `Don't stop until you have completed all the to-dos` 的 plan，同一对话最多执行 1 次。第二波起先走上面的签字门，或让用户新开 chat。禁止无 C=是 连续接 3 个以上 `Implement the plan`。
+Until the user writes **C=是** (or 「可以执行」 / 「开干」 / 「直接执行无需再问」), do not edit files, commit, or run environment-changing commands. Read-only is OK. After approval, do not edit the plan file itself unless the user asks.
 
-## 换会话指令
+## One wave per conversation
 
-用户说「下一步」「新开 chat」「执行指令」「给我指令」，或一波做完要换会话：直接给**已填好**的一块，禁止留 `<占位符>`。
+For a plan that says `Don't stop until you have completed all the to-dos`: run it at most once in the same chat. From the second wave onward, pass the sign-off gate above, or ask the user to open a new chat. Do not chain three or more `Implement the plan` runs without **C=是**.
 
-从当前仓库填：目标、可写/禁止路径、交付物、验收命令、≤10 行 state（看变更日志和该任务的进度文档）。末尾写 `C=是；直接执行无需再问。` 提醒新开会话再贴。禁止套别的项目的库名、文档编号或启动命令。
+## Handoff block for a new chat
+
+When the user says 「下一步」 / 「新开 chat」 / 「执行指令」 / 「给我指令」, or a wave finishes and needs a new session: give a **fully filled** block — no `<占位符>` / `<placeholder>` left.
+
+Fill from the current repo: goal, writable/forbidden paths, deliverables, acceptance commands, ≤10 lines of state (from CHANGELOG and that task’s progress docs). End with `C=是；直接执行无需再问。` and remind them to paste it in the new chat. Do not copy another project’s DB names, doc numbers, or start commands.
+
+Chinese reference (not installed): `zh/session-plan.md`

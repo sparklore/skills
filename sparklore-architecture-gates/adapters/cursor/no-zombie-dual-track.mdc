@@ -3,45 +3,47 @@ description: 禁止僵尸代码与双轨：生产零调用却靠测试/迁移/�
 alwaysApply: true
 ---
 
-# 禁止僵尸与双轨（No Zombie / Dual-Track）
+# No Zombie / Dual-Track
 
-「僵尸」= 生产路径已不走，但仍被测试、启动迁移、兼容分支、开关或文档续命，静态扫描看起来「还在用」。  
-「双轨」= 新旧两套同时写读，或 `if 旧 == nil { 新 }` 式静默并存。
+「僵尸」 / *zombie* = production no longer uses the path, but tests, boot migrations, compat branches, flags, or docs keep it alive so static scans still look “in use”.  
+「双轨」 / *dual-track* = old and new both read/write, or silent coexistence like `if old == nil { new }`.
 
-## 判定（任一成立即违规债）
+Chinese reference (not installed): `skills/claude/rules/zh/no-zombie-dual-track.md`
 
-| 信号 | 含义 |
+## Judgment (any one = violation debt)
+
+| Signal | Meaning |
 |---|---|
-| 生产入口传 `nil` / 永不调用，测试大量 `Open(":memory:")` 旧实现 | 测产脱节 |
-| `extensions` 已纯 `flow`，编译器 / BFF / PG 仍一等公民 `graph` | 持久化双真相 |
-| 删大文件同提交新增同体量同职责文件 | **搬家 ≠ 删除** |
-| 前端仍调已删路由；UI 文案仍写「规则兜底」 | 死调用 / 假能力 |
-| `SyncStore == nil` 等防护把未初始化变成空成功 | 失败被吞 |
+| Production entry passes `nil` / never calls; tests still `Open(":memory:")` the old impl heavily | Test/prod skew |
+| `extensions` are pure `flow`, but compiler / BFF / PG still treat `graph` as first-class | Dual persistence truth |
+| Delete a large file and same-commit add a same-size same-duty file | **Relocation ≠ deletion** |
+| Frontend still calls deleted routes; UI copy still says 「规则兜底」 / "rule fallback" | Dead call / fake capability |
+| Guards like `SyncStore == nil` turn “not ready” into empty success | Failure swallowed |
 
-## 一律禁止
+## Always forbidden
 
-- 在已判死的文件上继续加功能（反例：旧 `sqlite.go` 上叠 Quest 多线程）
-- 新旧双写、双读、静默回退旧管道 / 旧存储 / 旧编译器
-- 兼容开关无截止日期、无台账（见 `architecture`）
-- 用「测绿」证明旧实现仍合法：测试必须跑**与生产同构**的路径（如 `udboot.Open(":memory:")`）
-- 声明「已 purge」却保留 `CompileVisualGraph` / `wf.graph` / 旧 API 作为默认可写路径
+- Keep adding features on files already judged dead (anti-example: stacking Quest threads on legacy `sqlite.go`)
+- Dual-write, dual-read, silent fallback to old pipelines / stores / compilers
+- Compat flags with no deadline and no ledger (`architecture`)
+- Using “tests are green” to prove the old impl is still legitimate: tests must run a path **isomorphic to production** (e.g. `udboot.Open(":memory:")`)
+- Claiming 「已 purge」 / "purged" while keeping `CompileVisualGraph` / `wf.graph` / old APIs as default writable paths
 
-## 删除式改动的完成定义
+## Definition of done for deletion-style changes
 
-1. **生产入口**零引用（`cmd/*/main.go`、路由表、扩展 JSON）  
-2. **测试**改走新路径，旧夹具删除  
-3. **依赖**可摘则摘（如已无 SQLite 则去 `go.mod`）  
-4. **文档 / 台账 / freeze 清单**同步；禁止只改测试让门禁变绿  
-5. 可选投影（如拓扑图）必须标明「由 `flow` 实时编译」，不得再持久化第二份
+1. **Production entry** has zero references (`cmd/*/main.go`, route tables, extension JSON)  
+2. **Tests** move to the new path; old fixtures deleted  
+3. **Dependencies** dropped when unused (e.g. remove SQLite from `go.mod` if gone)  
+4. **Docs / ledger / freeze lists** updated; do not green the gate by editing tests only  
+5. Optional projections (e.g. topology) must state “compiled live from `flow`” — do not persist a second truth
 
-## 动手前三问（写进回复）
+## Three questions before editing (write into the reply)
 
-1. 生产谁调用？调用次数是否为 0？  
-2. 若删除，谁会红——是真实产品路径还是僵尸续命？  
-3. 是否存在第二真相（`graph`/`flow`、SQLite/KV、远程/本地引擎）？有则先定 SSoT 再删。
+1. Who calls this in production? Is the call count zero?  
+2. If deleted, what turns red — a real product path or zombie life-support?  
+3. Is there a second truth (`graph`/`flow`, SQLite/KV, remote/local engine)? Decide SSoT before deleting.
 
-## 与其它规则
+## Related rules
 
-- 编排写进 Go/JS → `no-silent-orchestration`  
-- 业务名进代码 → `data-driven`  
-- 有界过渡 → `architecture` 台账 + 截止日期  
+- Orchestration in Go/JS → `no-silent-orchestration`  
+- Business names in code → `data-driven`  
+- Bounded transitions → `architecture` ledger + deadline  

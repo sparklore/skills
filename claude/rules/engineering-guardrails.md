@@ -1,13 +1,15 @@
-# 工作流与质量铁律
+# Workflow and quality guardrails
 
-1. **先对齐，后编码**：
-   - 收到新需求时，若未提供明确验收标准（Acceptance Criteria），先提出 3-5 个关键边界问题并更新 `SPEC.md`，获得确认后再修改代码。
-   - 每次只执行当前约定的单个子任务，禁止顺手重构无关文件。
+1. **Align before coding**
+   - When a new requirement lacks clear Acceptance Criteria, ask 3–5 boundary questions first, update `SPEC.md`, and wait for confirmation before changing code.
+   - Execute only the currently agreed sub-task; do not opportunistically refactor unrelated files.
 
-2. **代码质量红线**：
-   - 严格遵守现有类型定义，禁止使用 `any` 或类型断言绕过编译检查。
-   - 优先复用项目中已有的工具函数和组件，严禁重复造轮子。
+2. **Code quality hard lines**
+   - Honor existing type definitions; do not use `any` or type assertions to bypass the typechecker.
+   - Prefer existing helpers and components in the repo; do not reinvent them.
 
-3. **强制自动验证（最重要）**：
-   - 任何代码改动完成后，你必须主动在终端运行验证命令（如 `npm run typecheck && npm run lint && npm test`）。
-   - 如果测试或检查失败，自行读取错误日志并修复，直到所有检查全绿后才允许结束本轮回复。
+3. **Mandatory automated verification (highest priority)**
+   - After any code change, you must run the repo’s verification commands in the terminal (example shape: `npm run typecheck && npm run lint && npm test` — use what this repo actually documents).
+   - On failure, read the logs and fix until every check is green before ending the turn.
+
+Chinese reference (not installed): `zh/engineering-guardrails.md`

@@ -1,11 +1,13 @@
-# 改库
+# Database changes
 
-新增或修改迁移文件后，同一回合用本仓库文档里的命令执行迁移。先确认数据库进程在听。失败先把库拉起来再重试。
+After adding or editing migration files, run the repo’s documented migrate command in the **same turn**. Confirm the DB process is listening first. On failure, bring the DB up, then retry.
 
-禁止把「请你自己跑迁移」当成唯一收尾。启动脚本即使会自动迁，本任务仍要当场跑一次并记下输出。
+Do not end with only 「请你自己跑迁移」 / "please run the migration yourself". Even if startup scripts migrate automatically, this task must still run migrate once now and record the output.
 
-项目若用命令导出结构快照，以导出结果为准，禁止手改。快照是手写维护的，同一次改动里补上相同的表、列、索引、约束。
+If the project exports a schema snapshot via a command, that export is authoritative — do not hand-edit it. If the snapshot is hand-maintained, add the same tables/columns/indexes/constraints in the same change.
 
-种子里禁止生产密码和真实个人敏感信息。种子里的业务内容是否允许编造，只看 `no-fake-data`。
+Seeds must not contain production passwords or real personal sensitive data. Whether seed *business* content may be invented → `no-fake-data` only.
 
-已发布、已在环境执行过的迁移文件不要改内容，只追加新文件。项目若另有「压成单条基线」的流程，以该项目文档为准，不要套别的仓库的库名、端口和冻结日期。
+Do not edit the contents of migrations already published / already applied in an environment — append new files. If the project has a “squash to a single baseline” process, follow that project’s docs; do not copy another repo’s DB name, ports, or freeze dates.
+
+Chinese reference (not installed): `zh/db-change.md`

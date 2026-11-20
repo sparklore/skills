@@ -19,7 +19,8 @@
 | 目录 | 用途 |
 |---|---|
 | [`sparklore-architecture-gates/`](sparklore-architecture-gates/) | **四闸正文 SSoT**；含 `evals/` |
-| [`claude/rules/`](claude/rules/) | 非闸共享规则 SSoT + 四闸生成镜像；Claude 专用 `worktree.md` |
+| [`claude/rules/`](claude/rules/) | 非闸共享规则 SSoT（**英文执行正文**）+ 四闸生成镜像；Claude 专用 `worktree.md`；[`zh/`](claude/rules/zh/) 中文参考（不装活镜像；触发词仍含中文） |
+| [`sparklore-architecture-gates/rules/`](sparklore-architecture-gates/rules/) | **四闸英文 SSoT**；中文参考在 `claude/rules/zh/` |
 | [`cursor/rules/`](cursor/rules/) | **生成物**（勿手改） |
 | [`overlays/`](overlays/) | 工具专用正文（现仅 `graphify.md`） |
 | [`architecture-compliance-audit/`](architecture-compliance-audit/) | 只读合规审计（按需）；含 `evals/` |

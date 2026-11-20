@@ -1,14 +1,16 @@
 ---
-description: 改前端页面时跟现有页面结构、设计令牌和请求层。禁止改接口形状来迁就界面
+description: Follow existing page patterns, tokens, API layer; do not reshape APIs for UI convenience
 alwaysApply: true
 ---
 
-# 前端页面
+# Frontend pages
 
-1. 跟仓库里已定型的页面写法（脚本风格、列表、弹窗、状态管理）。禁止 `any`。新页面走项目已有的路由登记，不在页面里另补一套菜单或权限。
-2. 请求只走现有 API 层。页面之间不互相引用；两处以上复用再提到公共组件。
-3. 定时器、订阅、进行中的请求在卸载时清理。
-4. 颜色和字号用设计令牌。缺令牌先加令牌，不在页面里写死色值。
-5. 禁止为了好做页面去改接口的请求或响应形状。富文本不直接用未消毒的 HTML 注入。
+1. Follow the repo’s established page patterns (script style, lists, dialogs, state). No `any`. New pages use existing route registration — do not invent a parallel menu or permission system inside the page.
+2. Requests go only through the existing API layer. Pages must not import each other; extract a shared component only when reused in two or more places.
+3. Clear timers, subscriptions, and in-flight requests on unmount.
+4. Colors and type sizes use design tokens. Missing token → add the token first; never hardcode colors in the page.
+5. Do not reshape request/response contracts to make a page easier. Do not inject unsanitized HTML for rich text.
 
-页面怎么点、页上应看见什么，按 `delivery-gate` 写。做设计规格（对比度、间距、断点）时看 `ui-designer`，不在本文件重复。
+How to click and what the page must show → `delivery-gate`. Visual specs (contrast, spacing, breakpoints) → `ui-designer`; do not duplicate here.
+
+Chinese reference (not installed): `zh/frontend.md`

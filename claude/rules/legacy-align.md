@@ -1,7 +1,9 @@
-# 对齐既有系统
+# Align with legacy systems
 
-移植或对照旧实现时才用本文件。空结果怎么返回见 `no-fake-data`。缓存能不能当实体真相见 `architecture`。
+Use this file only when porting or comparing against a prior implementation. Empty-result shape → `no-fake-data`. Whether cache may be entity truth → `architecture`.
 
-1. 旧系统走缓存的读路径，新实现使用同一键的语义。禁止不写差异就改成只读持久库。
-2. 可以换成更稳妥的做法（数据库锁代替缓存锁、签名代替共享令牌）。必须写明旧行为与新行为的差异。
-3. 差异记在项目的对齐文档里。没有这份文档时，写在当次设计里。
+1. If the legacy read path used a cache, the new implementation must preserve the same key semantics. Do not switch to “persist-only reads” without documenting the difference.
+2. Safer substitutes are allowed (DB lock instead of cache lock, signatures instead of shared tokens). You must state old vs new behavior.
+3. Record differences in the project’s alignment doc. If none exists, put them in the design note for this change.
+
+Chinese reference (not installed): `zh/legacy-align.md`

@@ -1,30 +1,32 @@
-# 架构优先
+# Architecture first
 
-触及数据所有权、事务边界、进程边界、鉴权、数据模型、跨服务契约、异步事件、定时任务、缓存投影时，先写短设计再改代码。项目有 `docs/design/` 就写在那里。设计包含：范围、数据流、不变量、失败与并发、验收。
+When a change touches data ownership, transaction boundaries, process boundaries, auth, data models, cross-service contracts, async events, scheduled jobs, or cache projections: write a short design **before** code. If the project has `docs/design/`, put it there. Design must cover: scope, data flow, invariants, failure & concurrency, acceptance.
 
-小改仍按 `engineering` 做最小 diff。不能用「改动很小」跳过本条。
+Small edits still follow `engineering` for minimal diff. 「改动很小」 / "the change is small" does **not** waive this rule.
 
-## 禁止
+## Forbidden
 
-- 无截止日期、无台账的「先过渡」。
-- 双写、双真相、静默回退旧数据源。编排/重试/提示词/旁路写进 Go/JS 而未先披露，见 `no-silent-orchestration`。
-- 把旧实现里已知的竞态、N+1、全键扫描照抄进来。对照旧系统时的差异记录只看 `legacy-align`。
-- 多副本却用进程内锁或内存状态当互斥或真相。
-- 把缓存或消息通道当实体的唯一持久化。资金类记录必须在持久库。
-- 关键状态只靠客户端触发，没有服务端兜底。
-- 需要可靠投递的事件，提交成功后再发、没有 outbox，或塞进会丢消息的通道。
+- 「先过渡」 / "ship a temporary bridge" with no deadline and no ledger entry.
+- Dual-write, dual truth, silent fallback to an old data source. Putting orchestration / retry / prompts / bypass into Go/JS without prior disclosure → `no-silent-orchestration`.
+- Copying known races, N+1, or full-key scans from the legacy impl. Recording legacy differences → `legacy-align` only.
+- Multi-replica deployments using in-process locks or memory as mutex or truth.
+- Using cache or a message channel as the entity’s only persistence. Records with monetary or ledger semantics must live in durable storage.
+- Critical state triggered only by the client, with no server-side backstop.
+- Events that need reliable delivery: publish after commit without an outbox, or push into a lossy channel.
 
-有界过渡必须同时有：台账条目、验收标准、禁止事项、下一步动作。和现有架构决定冲突时写进台账，带截止日期或触发条件。
+Bounded transitions require all of: ledger entry, acceptance criteria, prohibitions, next action. Conflicts with prior architecture decisions go into the ledger with a deadline or trigger condition.
 
-## 设计须回答
+## Design must answer
 
-| 维度 | 不变量 |
+| Dimension | Invariant |
 |---|---|
-| 数据所有权 | 实体只在持久库；缓存只做投影、锁、幂等 |
-| 事务 | 资金与状态变更同事务；失败不留半截 |
-| 幂等 | 写接口和任务可重放 |
-| 并发 | 行锁或数据库级锁 |
-| 异步 | 按项目已有分级；可靠事件不降级到易失通道 |
-| 定时 | 调度位置、互斥、重入、崩溃恢复 |
-| 缓存 | 谁写谁读、失效、对账；缓存挂了回落持久库或失败关闭 |
-| 契约 | 对外行为有差异时写进台账 |
+| Data ownership | Entities only in durable store; cache is projection / lock / idempotency |
+| Transactions | Monetary and state changes in one transaction; no half-applied failure |
+| Idempotency | Write APIs and jobs must be safely replayable |
+| Concurrency | Row locks or DB-level locks |
+| Async | Follow the project’s existing tiers; reliable events must not downgrade to lossy channels |
+| Scheduling | Where it runs, mutual exclusion, re-entrancy, crash recovery |
+| Cache | Who writes/reads, invalidation, reconciliation; on cache failure fall back to durable store or fail closed |
+| Contracts | External behavior differences must be ledgered |
+
+Chinese reference (not installed): `zh/architecture.md`

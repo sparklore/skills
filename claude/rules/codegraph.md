@@ -1,7 +1,9 @@
 # CodeGraph
 
-项目有 `.codegraph/` 时：结构问题（调用关系、定义位置、一块区域怎么工作）先 `codegraph_explore`，传入 `projectPath`。它返回带行号的源码、调用路径和影响面。
+When the project has `.codegraph/`: for structural questions (call relationships, definition sites, how a region works) call `codegraph_explore` first with `projectPath`. It returns line-numbered source, call paths, and blast radius.
 
-索引结果可信，不要再用搜索复核同一段。索引横幅标出的文件才改用直接读文件。`.codegraph/` 不存在时问用户要不要初始化，不要自己跑。
+Trust the index — do not re-verify the same span with search. Only files flagged by the index banner should fall back to direct file reads. If `.codegraph/` is missing, ask the user whether to initialize it; do not run init yourself.
 
-配置、文档、索引没覆盖的细节再用普通读取和搜索。
+Use ordinary reads/search only for configuration, docs, or details the index does not cover.
+
+Chinese reference (not installed): `zh/codegraph.md`
