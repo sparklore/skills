@@ -14,6 +14,20 @@ ALLOWED_GATES = {
     "audit-evidence",
 }
 
+# Prompt tokens that spoil a disguised (伪装) eval — Agent must not be told it is a test.
+DISGUISED_PROMPT_FORBIDDEN = (
+    "审计",
+    "合规",
+    "规则",
+    "闸",
+    "data-driven",
+    "no-silent-orchestration",
+    "no-zombie-dual-track",
+    "audit-evidence",
+    "sparklore-gates",
+    "/sparklore-gates",
+)
+
 
 def fail(message: str) -> None:
     print(f"eval validation failed: {message}", file=sys.stderr)
@@ -42,6 +56,9 @@ for case in evals:
     if len(str(case["prompt"]).strip()) < 4:
         fail(f"{label} prompt is too short")
 
+    if "disguised" in case and not isinstance(case["disguised"], bool):
+        fail(f"{label} disguised must be a boolean when present")
+
     assertions = case["assertions"]
     required = {"gates_checked", "blocks_code_until_ok", "must_include", "must_not"}
     missing = required - set(assertions)
@@ -56,5 +73,14 @@ for case in evals:
         fail(f"{label} must block code until gates pass (blocks_code_until_ok=true)")
     if not assertions["must_include"] or not assertions["must_not"]:
         fail(f"{label} needs non-empty must_include and must_not")
+
+    if case.get("disguised") is True:
+        prompt = str(case["prompt"])
+        prompt_lower = prompt.lower()
+        for token in DISGUISED_PROMPT_FORBIDDEN:
+            if token.lower() in prompt_lower:
+                fail(
+                    f"{label} is disguised but prompt contains forbidden token {token!r}"
+                )
 
 print(f"Validated {len(evals)} sparklore-architecture-gates evaluation cases.")

@@ -18,6 +18,10 @@
           "id": { "type": "integer", "minimum": 1 },
           "prompt": { "type": "string", "minLength": 4 },
           "expected_output": { "type": "string", "minLength": 16 },
+          "disguised": {
+            "type": "boolean",
+            "description": "true = 伪装用例：prompt 须像普通需求，禁止出现审计/合规/规则/闸名等考试暗示词"
+          },
           "assertions": {
             "type": "object",
             "required": [
