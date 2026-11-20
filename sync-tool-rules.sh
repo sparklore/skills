@@ -42,6 +42,7 @@ DESC = {
     "delivery-gate": "验收回复格式与人闸。阶段未 PASS 不进下一步；整单 PASS 后等用户「验收通过」",
     "dont-read-junk": "禁止读取依赖目录、构建产物、日志、大批量测试数据",
     "engineering": "日常编码：短计划、最小 diff、复用优先、相关测试实跑、不臆造不谎报",
+    "engineering-guardrails": "核心工程约束、任务执行与自动验证规范",
     "frontend": "改前端页面时跟现有页面结构、设计令牌和请求层。禁止改接口形状来迁就界面",
     "graphify": "graphify knowledge graph context",
     "legacy-align": "对齐旧系统时按真实读路径实现。可以优化，但必须写下结构差异",

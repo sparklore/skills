@@ -1,6 +1,5 @@
 ---
 description: 核心工程约束、任务执行与自动验证规范
-globs: *
 alwaysApply: true
 ---
 
