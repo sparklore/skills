@@ -5,7 +5,7 @@ alwaysApply: true
 
 # 交付与验收
 
-本文件只规定怎么汇报、什么时候算过。编码和测试怎么做见 `engineering`。复杂任务开工见 `session-plan`。
+本文件只规定怎么汇报、什么时候算过。编码和测试怎么做见 `engineering`。复杂任务开工前见 `session-plan`。
 
 ## 每步回复
 
@@ -26,7 +26,7 @@ alwaysApply: true
 4. **若失败：** 最可能原因，看哪个日志，回到哪一步。
 
 ### 下一步动作
-- FAIL → 只纠偏，同命令重跑，不换题，不进下一步
+- FAIL → 只纠偏，同命令重跑，不换题，不进下一步。同一失败症状连续修复 ≤3 次；超限停手，汇报卡点与已尝试；禁止删/弱化测试凑绿（见 `engineering`）
 - 同 plan 未完且本阶段 PASS → 下一步 id
 - 全 plan PASS → 停，等用户「验收通过」（或 `LGTM` / `验收 OK`）
 ```
@@ -37,9 +37,25 @@ alwaysApply: true
 
 用户要求一口气做完时，步间停顿可省。阶段没绿不能算过，收尾该跑的全量不能省。
 
+用户验收指出规则盲区或反复低级错误时：修完后问是否写入对应规则；架构硬闸才进 `skills/sparklore-architecture-gates/`，流程类进 `session-plan` / `engineering` / `delivery-gate` 等，禁止默认塞进 gates。
+
 ## 界面
 
 改了用户能看见的页面：写清基址、账号来源、菜单或路由、页上应看见的文字、列、按钮。纯接口以命令输出为准。有没有可见入口，只看 `visible-entry`。
+
+### 验证环（Feature Map → 浏览器 / CDP → 再改）
+
+改 UI 或「页面上看见的行为」时，**先复现再改**。人操作优先走本地控制台顶栏 **「UI 验证环」**（`http://127.0.0.1:7789/ui-verify.html`）：打开地图、启停用户端、检查/重生成地图均点按钮，不要默认教终端命令。地图产物：`sparklore-clients/docs/feature-map.md`（代码生成，禁止手改）。完整点击步骤与验收清单：forge 仓 `docs/38-ops-ui-verify-feature-map.md`。
+
+**可复制步骤：**
+
+1. **定位：** 控制台「UI 验证环」→「打开 Feature Map」，用入口文案 / 请求路径 / 文件名搜到目标行；记下「入口 `file:line` → 方法与路径 → handler `file:line` → 状态」。状态「未注册 / 未解析」只说明差集，**不是**「删即可」的因果结论（见 `audit-evidence`）。
+2. **起页：** 验证环页确认用户端在听（可点「启动用户端」）或打开 `http://127.0.0.1:8090`。Agent 用 `cursor-ide-browser`：`browser_navigate` →（已有页则先）`browser_lock` → `browser_snapshot`；需要接口字段时用 CDP `Runtime.evaluate`（`awaitPromise: true`）打同一条地图里的路径。
+3. **复现：** 按地图走到可见入口，记录**坏的**证据（截图、snapshot 里的可见文字、或 CDP 返回的 JSON 字段）。复现不到 → **停手不改**，汇报「未能复现」与已试步骤；禁止凭猜测改。
+4. **再改：** 只改定位到的那条链；禁止借机大重构、禁止为演示改路由 / 业务硬编码。
+5. **验证消失：** 同一入口、同一步骤再走一遍；坏现象须消失。证据与步骤 3 同形（截图 / snapshot / CDP）。若改动触及 JS 字面量请求：在验证环点「重生成地图」（或用户端组同名任务卡），产物进提交；勿默认手敲 `FEATURE_MAP_UPDATE`。
+
+汇报里贴：地图行（或等价引用）→ 复现证据 → 修复要点 → 再复现不到的证据。
 
 ## 多选
 
