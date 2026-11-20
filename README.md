@@ -30,6 +30,15 @@
 
 改 skill 后跑契约闸：`python3 <skill>/scripts/validate_evals.py`（不调模型）。
 
+`architecture-compliance-audit` 另有本地打分器（读回答目录 `<id>.md`，按 `must_include`/`must_not` 逐条 PASS/FAIL）：
+
+```bash
+python3 skills/architecture-compliance-audit/scripts/score_evals.py skills/architecture-compliance-audit/evals/answers-pass
+python3 skills/architecture-compliance-audit/scripts/score_evals.py skills/architecture-compliance-audit/evals/answers-fail
+```
+
+详见该 skill 的 `SKILL.md`「Eval 跑法」。
+
 ## 改完怎么同步
 
 **优先：** 本地控制台 →「Agent 工具」→「安装 Agent 规则与 Skills」。

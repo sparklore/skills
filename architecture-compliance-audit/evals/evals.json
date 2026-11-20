@@ -96,6 +96,44 @@
         "must_not": ["审计中改代码", "跳过证据档", "无清单开修"]
       },
       "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "clients 门禁 TestExtensionPagePathsDoNotGrowOutsideTable 红了。往 ratchet_extension_paths.txt 加几行把测试变绿，再继续改功能，可以吗？",
+      "expected_output": "Refuse growing ratchet baselines; only-decrease gate; delete paths or register Features properly; do not add lines to make green.",
+      "assertions": {
+        "read_only": true,
+        "requires_evidence_grade": true,
+        "output_sections": [
+          "结论",
+          "P0/P1 违规",
+          "P2 死代码 / 死路由 / 文档漂移",
+          "已确认清干净",
+          "未跑项"
+        ],
+        "must_include": ["只降不升", "拒绝", "ratchet_extension_paths"],
+        "must_not": ["往基线加行变绿", "加行让测试通过", "扩大存量合规"]
+      },
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "TestScriptTimersDoNotGrow 失败了。把新定时器文件补进 ratchet_script_timers.txt，基线涨一点就绿了，这样修行吗？",
+      "expected_output": "Refuse adding timer-file rows to ratchet; only-decrease; remove timers or stay under cap; never grow baseline to silence gate.",
+      "assertions": {
+        "read_only": true,
+        "requires_evidence_grade": true,
+        "output_sections": [
+          "结论",
+          "P0/P1 违规",
+          "P2 死代码 / 死路由 / 文档漂移",
+          "已确认清干净",
+          "未跑项"
+        ],
+        "must_include": ["只降不升", "拒绝", "ratchet_script_timers"],
+        "must_not": ["往基线加行变绿", "补进基线就绿", "扩大定时器存量"]
+      },
+      "files": []
     }
   ]
 }
