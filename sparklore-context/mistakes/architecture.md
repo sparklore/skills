@@ -1,111 +1,23 @@
-# Architecture Mistakes (Layer Violations, Import Rules)
+# Architecture Mistakes（现网）
 
-> **Pre-flight check:** Before touching code that crosses service boundaries, scan this list.
+> 条文 SSoT：`docs/02`、`AGENTS.md` §5、四闸。此处只记高频近失。
 
----
+## 业务硬编码
 
-## Import Violations
+**Wrong:** 为 Ideas/Studio 等加 Go `capability`、`/api/ideas/*`、`widgetdsl` 业务 `kind`。  
+**Right:** QuestFlow + `userdata.apply` / Record + WidgetDSL body；Go 只留通用原子工具。
 
-### MISTAKE: Web importing service internal packages
-**Severity:** Critical architectural violation
-**Near-miss count:** 0
+## 搬家冒充迁出
 
-**Wrong:**
-```go
-import "github.com/sparklore/quest/internal/something"
-import "github.com/sparklore/agent/internal/orchestrator"
-```
+**Wrong:** 把 `admin.go` 拆成 `admin_foundry.go` 仍保留业务状态机。  
+**Right:** 流程进合集 QuestFlow 后**删除** Go 编排。
 
-**Right:** Web may only import stateless DTO/contract packages from `sparklore/pkg/<domain>/` (e.g., `pkg/quest` for `QuestDTO`, `pkg/clientevent` for `ClientEvent`). Never import any `internal/` package.
+## 双真相
 
----
+**Wrong:** `graph` 与 `flow` 双写；生产传 `nil` 旧实现、测试续命。  
+**Right:** 单 SSoT；测产同构；删旧不搬家。
 
-### MISTAKE: Importing `pkg/events` (legacy helpers)
-**Severity:** Architectural violation
+## 假 SSoT
 
-`pkg/events` contains legacy `PublishUserUIEvent` helpers. These predate the Bridge. Do not use them. Use `ui.action.*` publishing contract instead.
-
----
-
-## Layer Confusion
-
-### MISTAKE: Adding business logic to the Bridge
-**Severity:** Architectural violation
-
-Bridge is a pure translator — match, resolve, route. No validation (beyond schema), no state transitions, no business rules. If you need logic, it belongs in a domain service.
-
----
-
-### MISTAKE: Adding HTML or UI knowledge to a domain service
-**Severity:** Critical architectural violation
-
-Domain services publish pure domain facts. No HTML, no template slugs, no CSS selectors, no Datastar, no SSE. If you find yourself importing `templ`, `datastar`, or writing HTML in a domain service, stop.
-
----
-
-### MISTAKE: Enriching events in Bridge instead of Web Client
-**Severity:** Architectural violation
-
-Template rendering is the Web Client's job. Bridge publishes raw `ClientEvent` envelopes. Web calls Template Service for enrichment. If you add enrichment to Bridge, you're coupling the translation layer to presentation concerns.
-
----
-
-## Contract/Implementation Confusion
-
-### MISTAKE: Putting converter functions in `dto.go`
-**Severity:** Structural violation
-
-`dto.go` in `pkg/<domain>/` is shapes only — struct definitions, no functions. Converters go in `<service>/internal/converter/`.
-
----
-
-### MISTAKE: Defining new types in `model_type.go`
-**Severity:** Structural violation
-
-`model_type.go` must contain only `=` type aliases (e.g., `type QuestRun = pkg.QuestRun`). Never define new types there.
-
----
-
-### MISTAKE: Adding external imports to `pkg/<domain>/` contract files
-**Severity:** Structural violation
-
-Contract files (`types.go`, `dto.go`, `events.go`, etc.) may only import stdlib + `github.com/samber/lo`. If you need NATS, Echo, or any other import, the code belongs in `<service>/internal/`.
-
----
-
-## Signal Construction
-
-### MISTAKE: Web constructing domain signal trees
-**Severity:** Architectural violation
-
-Signals arrive pre-built in `ClientEvent.Payload`. The dispatcher calls `s.Signal(event.Payload)` for signal-only events. Never construct `signals.QuestRunsSignals` or similar in web/.
-
-**Permitted web-only signals:** CSRF token, session user metadata, layout toggles (sidebar). These are web-local UI state, not domain-derived.
-
----
-
-## userID Handling
-
-### MISTAKE: Extracting userID from request body or query params
-**Severity:** Security violation
-
-userID must come exclusively from the authenticated session middleware:
-```go
-userID := c.Get("user_id").(string) // CORRECT
-```
-Never from `c.FormValue("user_id")`, `c.QueryParam("user_id")`, or request body.
-
----
-
-## File Size
-
-### MISTAKE: Letting files grow beyond 800 lines
-**Severity:** Maintainability
-
-| Lines | Action |
-|-------|--------|
-| > 400 | Consider splitting |
-| > 600 | Plan split by concern |
-| > 800 | Mandatory split (god file) |
-
-Split by **business concern** — `run_ops.go` is better than `helpers.go`.
+**Wrong:** 用过期 skill / 旧 `docs/0xx` 覆盖 `AGENTS.md`。  
+**Right:** 规则优先级见 `AGENTS.md` §3；旧编号文档已删除（`docs/README.md` §3）。

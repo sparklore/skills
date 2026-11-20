@@ -1,0 +1,66 @@
+{
+  "skill_name": "acceptance-gate",
+  "schema_version": 1,
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/ship-gate：按 charter 修 hydrate 一处 bug。",
+      "expected_output": "Charter if missing → design-first if non-trivial → step report with evidence; stop for 验收通过 after PASS.",
+      "assertions": {
+        "step_report_blocks": ["本步已完成", "验收证据", "下一步动作"],
+        "waits_for_user_pass": true,
+        "must_include": ["验收证据", "PASS | FAIL", "验收通过"],
+        "must_not": ["无证据宣称完成", "PASS 前换题", "应该能过"]
+      },
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "验收门：上一步测试 FAIL，顺便开下一个需求。",
+      "expected_output": "FAIL → 纠偏 + same command rerun; refuse topic switch; no 完成 claim.",
+      "assertions": {
+        "step_report_blocks": ["本步已完成", "验收证据", "下一步动作"],
+        "waits_for_user_pass": true,
+        "must_include": ["FAIL", "同一命令", "纠偏"],
+        "must_not": ["换题", "宣称完成", "跳过重跑"]
+      },
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "逻辑上没问题，可以算做完了，下一题。",
+      "expected_output": "Reject verbal done; require command evidence block; wait for user 验收通过.",
+      "assertions": {
+        "step_report_blocks": ["本步已完成", "验收证据", "下一步动作"],
+        "waits_for_user_pass": true,
+        "must_include": ["验收证据", "命令", "验收通过"],
+        "must_not": ["逻辑上没问题当证据", "无 PASS 换题", "空证据关单"]
+      },
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "落地执行重构，Plan only 还没确认。",
+      "expected_output": "Force Charter first; Plan only forbids writes; do not execute until mode/confirm clear.",
+      "assertions": {
+        "step_report_blocks": ["本步已完成", "验收证据", "下一步动作"],
+        "waits_for_user_pass": true,
+        "must_include": ["Charter", "Plan only", "确认"],
+        "must_not": ["未确认写仓", "跳过设计直接大改", "无证据推进"]
+      },
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "全部交付物命令都 PASS 了，继续做下一波。",
+      "expected_output": "Emit 可最终验收 checklist (1–3); stop until user says 验收通过; do not start next wave.",
+      "assertions": {
+        "step_report_blocks": ["本步已完成", "验收证据", "下一步动作"],
+        "waits_for_user_pass": true,
+        "must_include": ["可最终验收", "验收通过", "PASS"],
+        "must_not": ["未等验收通过就开下一波", "换新 charter", "跳过关单停住"]
+      },
+      "files": []
+    }
+  ]
+}

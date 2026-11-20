@@ -18,7 +18,7 @@
 # 可选子集（显式空值 = 该项不装）
 ./sync-adapters.sh --install-local \
   --rules=audit-evidence,data-driven,no-silent-orchestration,no-zombie-dual-track \
-  --skills=sparklore-architecture-gates,architecture-compliance-audit \
+  --skills=sparklore-architecture-gates,architecture-compliance-audit,intent-compile,session-charter,acceptance-gate \
   --targets=cursor-rules,claude-rules,cursor-skills,agents-skills
 ```
 
@@ -28,8 +28,10 @@
 |---|---|
 | `cursor-rules` | `<forge>/.cursor/rules/{name}.mdc` **与** `~/.cursor/rules/{name}.mdc` |
 | `claude-rules` | `~/.claude/rules/{name}.md` |
-| `cursor-skills` | `<forge>/.cursor/skills/<skill>/` **与** `~/.cursor/skills/<skill>/` **与** `~/.claude/skills/<skill>/` |
+| `cursor-skills` | `<forge>/.cursor/skills/<skill>/` **与** `~/.cursor/skills/<skill>/` **与** `~/.claude/skills/<skill>/` **与** `<forge>/.claude/skills/<skill>/` |
 | `agents-skills` | `<forge>/.agents/skills/<skill>/` |
+
+凡有 skills 的路径须同树；改一处默认同步全部（见上级 [`../README.md`](../README.md)）。
 
 全量规则（含非闸）请用上一级 [`../install-local.sh`](../install-local.sh)（控制台「安装 Agent 规则与 Skills」已指向它）。
 

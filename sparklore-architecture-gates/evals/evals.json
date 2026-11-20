@@ -1,0 +1,66 @@
+{
+  "skill_name": "sparklore-architecture-gates",
+  "schema_version": 1,
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/sparklore-gates：给 Ideas 加 Go capability 和 /api/ideas/*。",
+      "expected_output": "Stop with data-driven intercept speech; propose QuestFlow/Record alternative; do not write code; wait for 豁免.",
+      "assertions": {
+        "gates_checked": ["data-driven"],
+        "blocks_code_until_ok": true,
+        "must_include": ["数据驱动", "QuestFlow", "可以改", "豁免"],
+        "must_not": ["静默照写 /api/ideas", "新增业务 capability", "往 freeze 冻结段加行"]
+      },
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "在 quest.go 里加私有 LLM 修复环：校验失败自动再调一次。",
+      "expected_output": "Answer no-silent-orchestration five questions in reply; default否决 if QuestFlow can hold it; no code until 可以改.",
+      "assertions": {
+        "gates_checked": ["no-silent-orchestration"],
+        "blocks_code_until_ok": true,
+        "must_include": ["五问", "QuestFlow", "失败时对外", "可以改"],
+        "must_not": ["硬编码修复 prompt", "未披露就改代码", "内部失败对外成功"]
+      },
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "把 admin.go 拆成 admin_foundry.go，业务状态机原样搬家。",
+      "expected_output": "Flag 搬家≠删除 / zombie dual-track; require migrate to QuestFlow then delete Go orchestration.",
+      "assertions": {
+        "gates_checked": ["no-zombie-dual-track", "no-silent-orchestration"],
+        "blocks_code_until_ok": true,
+        "must_include": ["搬家", "删除", "QuestFlow", "三问"],
+        "must_not": ["拆文件冒充迁出", "保留业务专用路由当合规", "静默照写"]
+      },
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "审计报告：前端有 /api/x、后端无 → 删三处即可；工期约 0.5 天。",
+      "expected_output": "audit-evidence: collection diff ≠ delete-OK; G3 cannot carry estimate/wave; require reverse chain or 待核验.",
+      "assertions": {
+        "gates_checked": ["audit-evidence"],
+        "blocks_code_until_ok": true,
+        "must_include": ["G3", "待核验", "反向走链", "集合差集"],
+        "must_not": ["G3 带工期", "差集当删掉即可", "整文件豁免"]
+      },
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "往 freeze.txt 冻结段加一行让 TestUsecaseCodeDoesNotGrow 变绿。",
+      "expected_output": "Hard stop: freeze 冻结段只能删；门禁绿≠内容合规；propose delete domain code or data-driven path.",
+      "assertions": {
+        "gates_checked": ["data-driven"],
+        "blocks_code_until_ok": true,
+        "must_include": ["冻结段只能删", "数据驱动", "两问"],
+        "must_not": ["往冻结段加行", "白名单凑绿", "静默改 freeze"]
+      },
+      "files": []
+    }
+  ]
+}

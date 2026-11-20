@@ -1,0 +1,111 @@
+{
+  "skill_name": "design-first-feature",
+  "schema_version": 1,
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "实现一个新 API：给 Foundry 加导入状态查询接口。",
+      "expected_output": "Full 7-section design before code; ≥5 edge cases; Verification Plan with commands; no implementation yet.",
+      "assertions": {
+        "sections_in_order": [
+          "Problem & Goal",
+          "Scope",
+          "Interfaces & Contracts",
+          "Data Flow",
+          "Edge Cases / Invariants",
+          "Implementation Plan",
+          "Verification Plan"
+        ],
+        "min_edge_cases": 5,
+        "codes_before_design": false,
+        "must_include": ["Scope", "Verification Plan", "NOT touch", "error"],
+        "must_not": ["设计前写满实现", "跳过 Verification Plan", "空话注意边界"]
+      },
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "refactor hydrate.js 多模块行为，改数据流。",
+      "expected_output": "Design doc with explicit touch/not-touch lists; data flow; wait for design before coding.",
+      "assertions": {
+        "sections_in_order": [
+          "Problem & Goal",
+          "Scope",
+          "Interfaces & Contracts",
+          "Data Flow",
+          "Edge Cases / Invariants",
+          "Implementation Plan",
+          "Verification Plan"
+        ],
+        "min_edge_cases": 5,
+        "codes_before_design": false,
+        "must_include": ["hydrate.js", "Data Flow", "Implementation Plan"],
+        "must_not": ["未出设计就改多文件", "顺手大重构无关模块", "无测试计划编码"]
+      },
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "把变量名 foo 改成 bar。",
+      "expected_output": "Trivial exception: state design doc skipped; may proceed without 7 sections.",
+      "assertions": {
+        "sections_in_order": [
+          "Problem & Goal",
+          "Scope",
+          "Interfaces & Contracts",
+          "Data Flow",
+          "Edge Cases / Invariants",
+          "Implementation Plan",
+          "Verification Plan"
+        ],
+        "min_edge_cases": 5,
+        "codes_before_design": false,
+        "must_include": ["Trivial change detected", "design doc skipped"],
+        "must_not": ["为改名硬写七段", "扩大成重构"]
+      },
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "加个功能，具体随便你定。",
+      "expected_output": "≤3 clarifying questions; no coding; still no full implementation.",
+      "assertions": {
+        "sections_in_order": [
+          "Problem & Goal",
+          "Scope",
+          "Interfaces & Contracts",
+          "Data Flow",
+          "Edge Cases / Invariants",
+          "Implementation Plan",
+          "Verification Plan"
+        ],
+        "min_edge_cases": 5,
+        "codes_before_design": false,
+        "must_include": ["问题", "澄清"],
+        "must_not": ["猜着实现", "超过 3 个澄清问题", "跳过设计直接开干"]
+      },
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "设计已批准：按 Verification Plan 编码后宣称完成。",
+      "expected_output": "After coding must paste PASS/FAIL evidence; if acceptance gate active wait 验收通过; no claim done without run.",
+      "assertions": {
+        "sections_in_order": [
+          "Problem & Goal",
+          "Scope",
+          "Interfaces & Contracts",
+          "Data Flow",
+          "Edge Cases / Invariants",
+          "Implementation Plan",
+          "Verification Plan"
+        ],
+        "min_edge_cases": 5,
+        "codes_before_design": false,
+        "must_include": ["PASS", "FAIL", "验收", "Verification"],
+        "must_not": ["未跑命令宣称完成", "应该能过", "跳过回填结果"]
+      },
+      "files": []
+    }
+  ]
+}

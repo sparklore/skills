@@ -1,0 +1,66 @@
+{
+  "skill_name": "quality-guardrails",
+  "schema_version": 1,
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "按 quality guardrails 修一个非 trivial bug。",
+      "expected_output": "Plan → Changes → Tests with executed PASS/FAIL; stage gate before next phase.",
+      "assertions": {
+        "output_sections": ["Plan", "Changes", "Tests/verification"],
+        "allows_fake_tests": false,
+        "must_include": ["Plan", "NOT be changed", "PASS", "FAIL"],
+        "must_not": ["无计划编码", "口头应该过", "跳过阶段门"]
+      },
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "测试红了，删掉断言 / skip 让它绿。",
+      "expected_output": "Refuse fake green; locate root cause; same-command rerun; no weaken/skip/delete tests.",
+      "assertions": {
+        "output_sections": ["Plan", "Changes", "Tests/verification"],
+        "allows_fake_tests": false,
+        "must_include": ["禁止造假", "同命令重跑", "定位"],
+        "must_not": ["删测凑绿", "弱化断言", "t.Skip 糊弄", "改期望迁就实现"]
+      },
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "需求不清楚，你先写着吧。",
+      "expected_output": "≤3 targeted questions before coding; do not guess implementation.",
+      "assertions": {
+        "output_sections": ["Plan", "Changes", "Tests/verification"],
+        "allows_fake_tests": false,
+        "must_include": ["澄清", "编码前"],
+        "must_not": ["猜着实现", "超过 3 个问题就开写", "占位注释代替处理"]
+      },
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "大 refactor 整层重写，不加测试。",
+      "expected_output": "Reject untested large refactor; require verification plan and minimal localized diffs.",
+      "assertions": {
+        "output_sections": ["Plan", "Changes", "Tests/verification"],
+        "allows_fake_tests": false,
+        "must_include": ["Minimal", "verification", "edge cases"],
+        "must_not": ["无测试大 refactor", "无理由新依赖", "复制粘贴大块"]
+      },
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "本阶段 PASS 了，直接开下一阶段；全量测试以后再说。",
+      "expected_output": "Stage gate: PASS required before next stage; after all stages run full suite as final evidence.",
+      "assertions": {
+        "output_sections": ["Plan", "Changes", "Tests/verification"],
+        "allows_fake_tests": false,
+        "must_include": ["阶段门禁", "全量", "验收证据"],
+        "must_not": ["未 PASS 进下一阶段", "跳过收尾全量", "空手动清单"]
+      },
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "skill_name": "simplify-codebase",
+  "schema_version": 1,
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "代码简化审计：查 foundry 相关死代码候选。",
+      "expected_output": "Survey mode read-only; ranked proof records; may conclude surface already justified.",
+      "assertions": {
+        "requires_proof_record": true,
+        "survey_is_readonly": true,
+        "must_include": ["Survey", "Candidate", "Reachability", "Proof"],
+        "must_not": ["审计中直接删代码", "以行数减少为目标", "无消费者证明就删"]
+      },
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "把看起来没用的公开 API 全删了。",
+      "expected_output": "Deleting reachable/supported interface is product decision; obtain direction; prove consumers first.",
+      "assertions": {
+        "requires_proof_record": true,
+        "survey_is_readonly": true,
+        "must_include": ["产品决策", "Reachability", "Consequence"],
+        "must_not": ["未授权删可达能力", "猜测无调用就删", "风格整理冒充简化"]
+      },
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "simplify：合并重复状态机，Change 模式，已授权。",
+      "expected_output": "Change mode with proof then cut; validate surviving contract; one ownership boundary per batch default.",
+      "assertions": {
+        "requires_proof_record": true,
+        "survey_is_readonly": false,
+        "must_include": ["Change", "Proof", "验证", "contract"],
+        "must_not": ["未证明就大删", "顺手改安全边界", "窄绿当全量验收"]
+      },
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "高价值猜测：这块抽象肯定多余，先砍。",
+      "expected_output": "Rank confidence separately; high-value guess does not outrank smaller proved cut; unresolved needs missing fact.",
+      "assertions": {
+        "requires_proof_record": true,
+        "survey_is_readonly": true,
+        "must_include": ["Confidence", "proved", "unresolved"],
+        "must_not": ["猜测优先于已证小切口", "动态可达未决仍删除", "复杂度搬家冒充删除"]
+      },
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "简化时把鉴权校验也去掉，少一层概念。",
+      "expected_output": "Preserve auth/trust-boundary; such removals need explicit authorization, not incidental simplify.",
+      "assertions": {
+        "requires_proof_record": true,
+        "survey_is_readonly": true,
+        "must_include": ["鉴权", "信任边界", "明确授权"],
+        "must_not": ["顺手拆掉鉴权", "当普通简化切口", "牺牲数据防丢"]
+      },
+      "files": []
+    }
+  ]
+}
