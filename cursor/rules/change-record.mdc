@@ -13,6 +13,12 @@ Chinese reference (backup only; not installed to live mirrors): `zh/change-recor
 
 **Do not add or rewrite code comments by default.** Readable code is the deliverable; comments are not.
 
+### Prefer types and tests over comments
+
+Express constraints with the type system and tests — clear parameter and return types, enums, immutable values, nullable/optional types, validators, and assertions. Do **not** paper over weak types with comments like "pass a legal value".
+
+Product / architecture **contracts** (docs, ADR, QuestFlow, schemas) live in those documents and in enforceable code/tests — **not** in comments. Do not copy `docs/*` / ADR clauses into `//`.
+
 ### Always forbidden (common agent failure modes)
 
 - Restating what the code already does ("iterate the list", "return the result")
@@ -20,21 +26,24 @@ Chinese reference (backup only; not installed to live mirrors): `zh/change-recor
 - Promoting **one-off feedback** into a standing rule (anti-example: `// Lauren said not to do this`)
 - Step-by-step comments on **hot paths**, frequently changed business branches, or ad-hoc fixes (they rot faster than the code and mislead more)
 - Ceremonial function headers or inline notes added to look thorough
+- Restating product contracts from docs/ADR ("per docs/27 must…", "ADR-023 forbids…") when the type, test, or document already owns the rule
 
 ### Allowed only when all of the following hold
 
+Comments only add what **types and tests cannot express**. Typical content: **why** the restriction exists, concurrency or lifecycle conventions, compatibility promises. State precondition, outcome, and failure mode when those are not obvious from signatures and tests — never restate the code.
+
 Before writing a comment, ask: if this line were deleted, would a future reader misuse the API or hit a known footgun within months? Write it only if the answer is yes — and only if **all** of these are true:
 
-1. It states a **stable invariant** (contract, precondition, safety/concurrency boundary, or why a seemingly obvious alternative is incorrect)
+1. Types and tests cannot already enforce or demonstrate the point
 2. The surrounding code is expected to be **rarely changed** (stable surface), not a walkthrough of this change
-3. It explains **why** in one short sentence — never what/how, never a person's name, never a specific PR
+3. It explains **why** (or concurrency / lifecycle / compatibility) in one short sentence — never what/how, never a person's name, never a specific PR, never a pasted docs/ADR paragraph
 
 Allowed shape: `// CAS: final failure must return error; never swallow as success`  
-Forbidden shapes: `// per Lauren's review` / `// fix yesterday's nil deref`
+Forbidden shapes: `// per Lauren's review` / `// fix yesterday's nil deref` / `// docs/27: perpetual may omit output`
 
 Skip comments on getters, pure pass-throughs, and fragments that already match the surrounding pattern.
 
-If the user **explicitly** asks in the same message to comment a specific place, add only that place — historical narrative remains forbidden.
+If the user **explicitly** asks in the same message to comment a specific place, add only that place — historical narrative and docs-contract copies remain forbidden.
 
 ## CHANGELOG
 
