@@ -13,6 +13,7 @@ For simple changes: short plan, then stop when done. Whether a design note is re
 
 - Follow existing layering and style. No unrelated rewrites, renames, or drive-by contract changes in other modules.
 - Do not add dependencies, abstractions, or config for hypothetical extension. Prefer one readable line when one line suffices.
+- **No over-coding:** If a small amount of code can finish the task with equivalent external behavior and correctness, do not inflate it with over-design (extra wrappers, abstraction layers, config, boilerplate, or "for later" extension points). Add complexity only when there is a second caller, a trust-boundary check, or an observable gain (correctness / performance / safety). Prefer deletion over addition. Line count is not a hard quota — judge whether code volume grew without need.
 
 ## Testing
 

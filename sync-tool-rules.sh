@@ -42,7 +42,7 @@ DESC = {
     "db-change": "After migrations, Agent runs this repo's migrate command and syncs schema snapshot; do not only ask the user",
     "delivery-gate": "Acceptance reply format and human gates; wait for 「验收通过」; Chinese reply headings",
     "dont-read-junk": "Do not read vendor/build/logs/bulk test dumps",
-    "engineering": "Daily coding: short plan, minimal diff, reuse first, run related tests, no fake verified claims",
+    "engineering": "Daily coding: short plan, minimal diff, no over-coding, reuse first, run related tests, no fake verified claims",
     "engineering-guardrails": "Align before code; type-safe; mandatory local verification before ending the turn",
     "frontend": "Follow existing page patterns, tokens, API layer; do not reshape APIs for UI convenience",
     "graphify": "graphify knowledge graph context",
