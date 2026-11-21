@@ -1,5 +1,5 @@
 ---
-description: Evidence grades G1 已确认 / G2 读过链 / G3 推断; no estimates on G3; set-diff is not causation
+description: 审计证据分级：每条发现标 G1 已确认 / G2 读过链 / G3 推断；G3 不得带预估或波次；差集不是结论
 alwaysApply: true
 ---
 

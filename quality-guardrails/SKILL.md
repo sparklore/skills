@@ -18,11 +18,11 @@ description: >-
 4. **Refactor for readability** — 避免 >2 层嵌套；复杂分支抽小函数；重复逻辑抽共享（有第二调用方时）。
 5. **Add verification（阶段测试门）**
    - 非 trivial：单测 / 集成测 / 可运行验证片段 + 期望结果；不可自动化则给可勾选手动清单（禁空话）。
-   - **汇报**：Tests/verification 须含 Agent 已执行的 PASS/FAIL；并按 `step-next-redo` 输出「验收步骤（可复制）」。
+   - **汇报**：Tests/verification 须含 Agent 已执行的 PASS/FAIL；并按规则 `delivery-gate` 输出「验收步骤（可复制）」。
    - **每阶段门禁**：阶段结束必须新增/更新有效测试（或 Charter/plan 等价命令）并实跑；未 PASS 禁止进下一阶段；FAIL → 定位 → 同命令重跑 → 通过再继续。
    - **禁止造假过测**：删测、空断言、弱化断言、`skip` / `t.Skip` / `Only`、改期望迁就实现、口头「应该过」。
    - **收尾全量**：全部阶段完成后跑 Charter/plan 全量套件，写入最终验收证据。
-   - 整单人闸：`acceptance-before-next-topic` / skill `acceptance-gate`。
+   - 整单人闸：规则 `delivery-gate`「下一步动作」/ skill `acceptance-gate`。
 6. **Self-check** — 编译/lint；无死代码；错误路径；无意外 N+1 / 无界循环。
 7. **Tradeoffs** — 非显然方案 1～3 行说明 why。
 

@@ -1,5 +1,5 @@
 ---
-description: No silent orchestration/retry/fallback in Go/JS; disclose why before edit; wait for 「可以改」
+description: 禁止在 Go/JS 里静默加编排、重试、兜底；动手前必须如实说明为什么、好处、为何不进 QuestFlow
 alwaysApply: true
 ---
 

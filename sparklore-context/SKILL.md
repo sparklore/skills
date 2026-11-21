@@ -42,7 +42,7 @@ description: |
 1. **识别**任务类型（问答 / 审计 / 文档 / 代码）  
 2. **探路**：`graphify query|path|explain`（见 [`CLAUDE.md`](../../CLAUDE.md)）；有 `.codegraph/` 再用 codegraph。**禁止** GitNexus / `gitnexus_*`（本仓未部署）  
 3. **过闸**：触及架构闸 → 读四闸；业务名进 Go/JS → **立即警告**并给数据驱动替代方案  
-4. **复杂任务**：Session Charter / plan-execution-gate / acceptance-gate（按规则触发，非「每一行都等 yes」）  
+4. **复杂任务**：Session Charter / `session-plan` Sign-off gate / acceptance-gate（按规则触发，非「每一行都等 yes」）  
 5. **执行**：最小 diff；不静默编排、不搬家冒充删除  
 6. **验证**：实跑相关测试/命令，贴 PASS/FAIL；未跑不得宣称完成  
 

@@ -35,7 +35,7 @@ description: >-
 
 ## 与 Plan 门的关系
 
-- 若输出 prompt 含「按计划执行」，提醒用户须走 `plan-execution-gate`（C=是）
+- 若输出 prompt 含「按计划执行」，提醒用户须走规则 `session-plan`「Sign-off gate」（C=是）
 - 用户只要 prompt、未要执行 → 默认不调用写文件工具
 
 ## 质量要求

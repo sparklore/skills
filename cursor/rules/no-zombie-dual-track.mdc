@@ -1,5 +1,5 @@
 ---
-description: No zombies/dual-track: prod-zero calls kept alive by tests; relocate≠delete; single SSoT
+description: 禁止僵尸代码与双轨：生产零调用却靠测试/迁移/开关续命；删旧不搬家；单真相源
 alwaysApply: true
 ---
 

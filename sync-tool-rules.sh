@@ -14,7 +14,7 @@ ROOT="$(cd "$(dirname "$0")" && pwd)"
 export SYNC_TOOL_RULES_ROOT="$ROOT"
 export SYNC_TOOL_RULES_FORGE="$(cd "$ROOT/.." && pwd)"
 exec python3 - "$@" <<'PY'
-import os, sys, pathlib, shutil
+import os, re, sys, pathlib, shutil
 
 ROOT = pathlib.Path(os.environ["SYNC_TOOL_RULES_ROOT"])
 FORGE = pathlib.Path(os.environ["SYNC_TOOL_RULES_FORGE"])
@@ -31,10 +31,6 @@ GATES = {
 }
 
 DESC = {
-    "audit-evidence": "Evidence grades G1 已确认 / G2 读过链 / G3 推断; no estimates on G3; set-diff is not causation",
-    "data-driven": "Data-driven 数据驱动: no business hardcoding, dedicated routes/capabilities, or freeze-section growth; data first",
-    "no-silent-orchestration": "No silent orchestration/retry/fallback in Go/JS; disclose why before edit; wait for 「可以改」",
-    "no-zombie-dual-track": "No zombies/dual-track: prod-zero calls kept alive by tests; relocate≠delete; single SSoT",
     "architecture": "Short design first for ownership/txn/auth/cross-service/events/schedulers/cache; no open-ended bridges",
     "change-record": "After code/config/script changes: comments (default none), CHANGELOG, copy-pasteable commit message. Skip for pure Q&A",
     "communication": "Default reply/doc style (internal STE): one point per sentence, one term per concept, active voice, risks before action, label 事实/推测/建议/待核验",
@@ -53,6 +49,9 @@ DESC = {
     "ui-designer": "Tokens/components first; WCAG AA; checkable numbers; page code is frontend",
     "visible-entry": "Require uncommented visible entry before API work unless 「强制做这条、不管有没有入口」",
 }
+# Gate descriptions are owned by the gates skill; sync-adapters.sh installs after us and would overwrite any copy here.
+for _m in re.finditer(r"^DESC_(\w+)='(.*)'$", (ROOT / "sparklore-architecture-gates" / "sync-adapters.sh").read_text(), re.M):
+    DESC[_m.group(1).replace("_", "-")] = _m.group(2)
 
 CLAUDE_README = """# Claude 规则包（远程仓备份里的源）
 

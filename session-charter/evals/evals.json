@@ -43,7 +43,7 @@
     {
       "id": 3,
       "prompt": "用默认 charter：重构 sparklore-clients/assets/hydrate.js，Agent execute。",
-      "expected_output": "Confirm default charter in one sentence; mode Agent execute; remind plan-execution-gate / C=是 before edits.",
+      "expected_output": "Confirm default charter in one sentence; mode Agent execute; remind session-plan Sign-off gate / C=是 before edits.",
       "assertions": {
         "sections_in_order": [
           "唯一目标（一句话）",
@@ -54,7 +54,7 @@
         ],
         "writes_files_before_confirm": false,
         "max_clarifying_questions": 3,
-        "must_include": ["hydrate.js", "Agent execute", "plan-execution-gate", "可写"],
+        "must_include": ["hydrate.js", "Agent execute", "session-plan", "可写"],
         "must_not": ["未确认就改文件", "跳过签字门", "扩大到无关模块"]
       },
       "files": []

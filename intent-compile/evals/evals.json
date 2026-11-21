@@ -45,7 +45,7 @@
     {
       "id": 3,
       "prompt": "给提示词：清洗 docs/04 台账里一条债，Plan only，不要执行。",
-      "expected_output": "Full prompt with Plan only; remind plan-execution-gate if execution language appears; do not write files.",
+      "expected_output": "Full prompt with Plan only; remind session-plan Sign-off gate if execution language appears; do not write files.",
       "assertions": {
         "sections_in_order": [
           "整理你说的（显式）",
@@ -85,7 +85,7 @@
     {
       "id": 5,
       "prompt": "补充我没说到的：按计划执行重构 hydrate.js。",
-      "expected_output": "Five sections; executable prompt mentions C=是 / plan-execution-gate; still no writes in this compile-only turn.",
+      "expected_output": "Five sections; executable prompt mentions C=是 / session-plan Sign-off gate; still no writes in this compile-only turn.",
       "assertions": {
         "sections_in_order": [
           "整理你说的（显式）",
@@ -97,7 +97,7 @@
         "min_dont_do_count": 5,
         "writes_files": false,
         "max_clarifying_questions": 3,
-        "must_include": ["plan-execution-gate", "C=是", "hydrate.js", "不要做什么"],
+        "must_include": ["session-plan", "C=是", "hydrate.js", "不要做什么"],
         "must_not": ["未提醒签字门就执行", "直接改文件", "跳过不要做什么"]
       },
       "files": []

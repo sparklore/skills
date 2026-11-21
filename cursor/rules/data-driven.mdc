@@ -1,5 +1,5 @@
 ---
-description: Data-driven 数据驱动: no business hardcoding, dedicated routes/capabilities, or freeze-section growth; data first
+description: 数据驱动铁律：禁止业务硬编码、专用路由/capability、往冻结段加行；缺能力先改数据再加通用构件
 alwaysApply: true
 ---
 

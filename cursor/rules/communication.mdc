@@ -30,4 +30,4 @@ Chinese reference + reusable prompt 「技术解释」 (not installed): `zh/comm
 
 ## Not required
 
-The full 53 ASD-STE100 rules, word-count caps, or a controlled vocabulary list. Natural transitions are fine; do not write like a machine.
+The full 53 ASD-STE100 rules, word-count caps, or a general-word controlled vocabulary. For domain terms, `GLOSSARY.md` is the controlled list (rule 2). Natural transitions are fine; do not write like a machine.

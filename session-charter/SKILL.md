@@ -13,7 +13,7 @@ disable-model-invocation: true
 
 - 新复杂任务（多文件、架构、docs 大改）
 - 用户说「开会话」「charter」「本会话只做什么」
-- 规则 `session-charter-reminder` 触发后需完整模板
+- 规则 `session-plan`「Charter」触发后需完整模板（条文以该规则为准，本 skill 只提供模板）
 
 ## 流程
 
@@ -42,7 +42,7 @@ disable-model-invocation: true
 ## 验收
 {make test / curl / 人工检查清单}
 
-**须含：** Agent 执行的验收证据 + 「验收步骤（可复制）」小白向操作（见规则 `step-next-redo`）。
+**须含：** Agent 执行的验收证据 + 「验收步骤（可复制）」小白向操作（见规则 `delivery-gate`「验收步骤（可复制）」）。
 
 ## 模式
 - 当前：Plan only | Agent execute
@@ -54,4 +54,4 @@ disable-model-invocation: true
 ## Agent 行为
 
 - Charter 确认前：只读探索可接受，**不写仓**
-- `Agent execute` 且涉及 plan 时，仍须遵守 `plan-execution-gate` 规则
+- `Agent execute` 且涉及 plan 时，仍须遵守规则 `session-plan`「Sign-off gate」（C=是）

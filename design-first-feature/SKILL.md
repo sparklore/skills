@@ -39,7 +39,7 @@ Trigger this skill when the user request includes one or more:
 - unit tests / integration tests to add or update
 - how to run them (commands)
 - expected results or assertions
-- **编码后必须回填已执行结果**（PASS/FAIL）；未 PASS 不得宣称完成 — 见 `acceptance-before-next-topic` / `/ship-gate`
+- **编码后必须回填已执行结果**（PASS/FAIL）；未 PASS 不得宣称完成 — 见规则 `delivery-gate`「下一步动作」/ `/ship-gate`
 
 ## Coding Constraints (MUST)
 - Do not write the full implementation until the required design output is provided.
