@@ -37,6 +37,7 @@ DESC = {
     "no-zombie-dual-track": "No zombies/dual-track: prod-zero calls kept alive by tests; relocate≠delete; single SSoT",
     "architecture": "Short design first for ownership/txn/auth/cross-service/events/schedulers/cache; no open-ended bridges",
     "change-record": "After code/config/script changes: comments (default none), CHANGELOG, copy-pasteable commit message. Skip for pure Q&A",
+    "communication": "Default reply/doc style (internal STE): one point per sentence, one term per concept, active voice, risks before action, label 事实/推测/建议/待核验",
     "codegraph": "When .codegraph/ exists, use codegraph_explore for structure before reading files",
     "db-change": "After migrations, Agent runs this repo's migrate command and syncs schema snapshot; do not only ask the user",
     "delivery-gate": "Acceptance reply format and human gates; wait for 「验收通过」; Chinese reply headings",
