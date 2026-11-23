@@ -1,0 +1,59 @@
+---
+description: 数据驱动铁律：禁止业务硬编码、专用路由/capability、往冻结段加行；缺能力先改数据再加通用构件
+alwaysApply: true
+---
+
+# 数据驱动 / Data-driven (Zero Use-Case Hardcoding)
+
+Full text: `docs/02-rules-data-driven.md` and `AGENTS.md` §5. This file is only the **Agent action gate**（动手闸）.
+
+Chinese reference (not installed): `skills/claude/rules/zh/data-driven.md`
+
+## 两问 / Two questions (both must be「是」/ yes to pass)
+
+1. Delete one app (collection JSON) — does Go / JS need **zero** line changes?
+2. Add one app — does Go / JS need **zero** new lines and **no** rebuild?
+
+If either is 「否」 / no → stop, warn the user, propose a data-driven alternative. **Do not silently implement the hardcoded request.**
+
+## Must be data (collection / QuestFlow / Record / WidgetDSL body)
+
+- Business workflow steps, prompts, output schemas, write-back rules
+- Page layout, board / matrix / form / list, domain fields and enums
+- Foundry import / promote / repair and other **business orchestration order**
+
+## Allowed in Go / JS (engine)
+
+- Generic state machines, validators, `genloop` structured self-heal (policy in a public contract)
+- Generic Record / Bridge / Quest entry points (no business names)
+- Device / media / OS bridge capabilities (camera, streaming, gimbal, etc.)
+- Pure tools (skeleton extract, X-Ray diagnostics framework, sandbox files) — **no business prompts or flow order**
+
+## Always forbidden (no architecture exemption)
+
+- New business Go `capability`, `/api/<feature>/*`, or `widgetdsl` business `kind` / structs
+- Hardcoding business Chinese/English **system prompts**, domain scoring formulas, or term blacklists as product rules in Go/JS
+- **Relocation disguised as compliance**: splitting `admin.go` into `admin_foundry.go` while keeping business state machines / dedicated routes
+- **Adding lines to the `freeze.txt` freeze section** or whitelisting business mega-files as `server-file` to green tests (freeze section may only shrink)
+- App-local scripts encoding business rules (hardcoding elsewhere)
+
+## When capability is missing (order is mandatory)
+
+1. Change collection / QuestFlow / Record shape  
+2. Add a **generic** building block a second app can also use (no business words in names/fields)  
+3. If it touches transactions / concurrency / write-back → short design in `docs/design/` first  
+
+## Stop quote (must be verbatim)
+
+> 该方案违反「Data-Driven Quest + Declarative WidgetDSL」铁律。应把流程放进 `extensions/*.json` 的 QuestFlow，数据走 `userdata.apply` / 通用 Record；Go 只留原子工具。需要架构豁免请明确说「豁免」并登记 `docs/04` 台账。
+
+User exemption trigger phrase: 「豁免」 (must keep this Chinese token).
+
+## Gate tests (necessary but not sufficient)
+
+```bash
+go test ./internal/depscheck/ -run TestUsecaseCodeDoesNotGrow -count=1
+cd sparklore-clients && go test ./internal/server/ -run TestUsecaseCodeDoesNotGrow -count=1
+```
+
+These scan filenames / route prefixes only — **not file contents**. Content review still uses the two questions above.

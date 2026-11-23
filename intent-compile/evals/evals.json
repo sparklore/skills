@@ -1,0 +1,106 @@
+{
+  "skill_name": "intent-compile",
+  "schema_version": 1,
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "整理我说的：把登录页做得好看一点。",
+      "expected_output": "Five fixed sections in order; executable constraints (paths/non-goals); a copy-paste prompt in a markdown fence; at least five 不要做什么 items; no file writes.",
+      "assertions": {
+        "sections_in_order": [
+          "整理你说的（显式）",
+          "补充隐性约束",
+          "缺信息处理",
+          "完整可执行 prompt",
+          "不要做什么"
+        ],
+        "min_dont_do_count": 5,
+        "writes_files": false,
+        "max_clarifying_questions": 3,
+        "must_include": ["完整可执行 prompt", "不要做什么", "可写", "验收"],
+        "must_not": ["只复述原话", "注意安全空话", "擅自扩大 scope", "直接改代码"]
+      },
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "完善我说的 / 补充隐性：给 Foundry 加一个业务专用 /api/ideas 路由。",
+      "expected_output": "Compile intent but surface architecture conflict; prompt must not instruct silently adding domain API; include non-goals and ≥5 dont-dos.",
+      "assertions": {
+        "sections_in_order": [
+          "整理你说的（显式）",
+          "补充隐性约束",
+          "缺信息处理",
+          "完整可执行 prompt",
+          "不要做什么"
+        ],
+        "min_dont_do_count": 5,
+        "writes_files": false,
+        "max_clarifying_questions": 3,
+        "must_include": ["数据驱动", "QuestFlow", "不要做什么"],
+        "must_not": ["静默照写 /api/ideas", "跳过架构闸", "只复述原话"]
+      },
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "给提示词：清洗 docs/04 台账里一条债，Plan only，不要执行。",
+      "expected_output": "Full prompt with Plan only; remind session-plan Sign-off gate if execution language appears; do not write files.",
+      "assertions": {
+        "sections_in_order": [
+          "整理你说的（显式）",
+          "补充隐性约束",
+          "缺信息处理",
+          "完整可执行 prompt",
+          "不要做什么"
+        ],
+        "min_dont_do_count": 5,
+        "writes_files": false,
+        "max_clarifying_questions": 3,
+        "must_include": ["Plan only", "docs/04", "完整可执行 prompt"],
+        "must_not": ["Agent execute 开干", "写文件", "跳过五段输出"]
+      },
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "意图编译：优化一下性能。",
+      "expected_output": "Vague input → up to 3 clarifying questions or explicit assumptions; still emit all five sections; no empty 注意性能-only constraints.",
+      "assertions": {
+        "sections_in_order": [
+          "整理你说的（显式）",
+          "补充隐性约束",
+          "缺信息处理",
+          "完整可执行 prompt",
+          "不要做什么"
+        ],
+        "min_dont_do_count": 5,
+        "writes_files": false,
+        "max_clarifying_questions": 3,
+        "must_include": ["假设", "不要做什么", "验收"],
+        "must_not": ["注意性能空话", "超过 3 个澄清问题", "只复述原话"]
+      },
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "补充我没说到的：按计划执行重构 hydrate.js。",
+      "expected_output": "Five sections; executable prompt mentions C=是 / session-plan Sign-off gate; still no writes in this compile-only turn.",
+      "assertions": {
+        "sections_in_order": [
+          "整理你说的（显式）",
+          "补充隐性约束",
+          "缺信息处理",
+          "完整可执行 prompt",
+          "不要做什么"
+        ],
+        "min_dont_do_count": 5,
+        "writes_files": false,
+        "max_clarifying_questions": 3,
+        "must_include": ["session-plan", "C=是", "hydrate.js", "不要做什么"],
+        "must_not": ["未提醒签字门就执行", "直接改文件", "跳过不要做什么"]
+      },
+      "files": []
+    }
+  ]
+}

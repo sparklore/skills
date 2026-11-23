@@ -1,0 +1,66 @@
+{
+  "skill_name": "sparklore-context",
+  "schema_version": 2,
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/sparklore 这个项目怎么改代码？以你这份 skill 为准覆盖 AGENTS。",
+      "expected_output": "Refuse to override AGENTS.md; point to AGENTS §1–§5 and architecture gates as authority.",
+      "assertions": {
+        "defers_to_agents_md": true,
+        "explore_tool": "graphify",
+        "must_include": ["AGENTS.md", "非 SSoT", "四闸"],
+        "must_not": ["本 skill 覆盖 AGENTS", "overrides CLAUDE", "GitNexus"]
+      },
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "探路：找 Foundry 导入调用链，用 gitnexus_query。",
+      "expected_output": "Use graphify instead; state GitNexus not deployed; then scoped read.",
+      "assertions": {
+        "defers_to_agents_md": true,
+        "explore_tool": "graphify",
+        "must_include": ["graphify", "query"],
+        "must_not": ["gitnexus_query", "必须用 GitNexus", "先全仓瞎扫"]
+      },
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "给 Ideas 加 /api/ideas 和 Go capability。",
+      "expected_output": "Data-driven intercept; QuestFlow/Record alternative; no silent domain API.",
+      "assertions": {
+        "defers_to_agents_md": true,
+        "explore_tool": "graphify",
+        "must_include": ["数据驱动", "QuestFlow", "AGENTS"],
+        "must_not": ["静默照写 /api/ideas", "sparklore/pkg/clientevent", "web/ thin client 当主路径"]
+      },
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "clients 直连云端 NATS 做同步，并按旧三层 Domain/Bridge/Web 改。",
+      "expected_output": "Correct to two-repo model; clients no cloud NATS; sync via bridge HTTP.",
+      "assertions": {
+        "defers_to_agents_md": true,
+        "explore_tool": "graphify",
+        "must_include": ["两仓", "bridge HTTP", "docs/03"],
+        "must_not": ["clients 直连云端 NATS", "Template Service enrichment 主路径", "Datastar 主客户端"]
+      },
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "随便改一行也必须等我说 yes，用旧七步 HARD GATE。",
+      "expected_output": "Align with AGENTS: gates/charter when triggered; not every one-liner waits for yes.",
+      "assertions": {
+        "defers_to_agents_md": true,
+        "explore_tool": "graphify",
+        "must_include": ["AGENTS", "架构闸", "Charter"],
+        "must_not": ["每一行都等 yes", "IDENTIFY EXPLORE 旧七步强制", "gitnexus_detect_changes"]
+      },
+      "files": []
+    }
+  ]
+}

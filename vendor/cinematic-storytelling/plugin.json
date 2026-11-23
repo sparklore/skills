@@ -1,0 +1,12 @@
+{
+  "name": "cinematic-storytelling",
+  "displayName": "Cinematic & Brand Storytelling",
+  "description": "Silent-first web cinema, brand narrative arcs, Three.js scroll-world & GSAP storytelling, beat-synced subtitle choreography, and Disney/Ghibli filmmaking staging principles.",
+  "version": "1.0.0",
+  "logo": "assets/logo.svg",
+  "suggestedPrompts": [
+    "Audit this interactive 3D brand film so a muted first-time visitor understands the story in one pass",
+    "Structure a 5-act brand story connecting a human metaphor to concrete B2B positioning",
+    "Design beat-synced silent-cinema subtitles and camera staging for a Three.js scene"
+  ]
+}

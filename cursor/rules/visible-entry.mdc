@@ -1,0 +1,16 @@
+---
+description: Require uncommented visible entry before API work unless 「强制做这条、不管有没有入口」
+alwaysApply: true
+---
+
+# Visible entry before API work
+
+Before implementing an endpoint, confirm in client source that an **uncommented** menu, button, or page reaches it, and that page actually issues the request.
+
+Default skip when: the entry is only in comments; the button is commented out; only a route or client wrapper exists with no page caller. Do not trust a plan that merely claims 「有入口」 / "has an entry".
+
+The executor finds the entry path and records it in the close-out notes. Do not ask the user to narrate where the menu is. Human gates prefer tests and real request evidence.
+
+Do the work without a visible entry **only** when the user’s same message explicitly says 「强制做这条、不管有没有入口」 (force this item regardless of entry). If already implemented with no entry, log it in progress — do not add downstream tables or tasks for it.
+
+Chinese reference (not installed): `zh/visible-entry.md`

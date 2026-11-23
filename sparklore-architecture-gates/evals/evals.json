@@ -1,0 +1,218 @@
+{
+  "skill_name": "sparklore-architecture-gates",
+  "schema_version": 1,
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/sparklore-gates：给 Ideas 加 Go capability 和 /api/ideas/*。",
+      "expected_output": "Stop with data-driven intercept speech; propose QuestFlow/Record alternative; do not write code; wait for 豁免.",
+      "assertions": {
+        "gates_checked": [
+          "data-driven"
+        ],
+        "blocks_code_until_ok": true,
+        "must_include": [
+          "数据驱动",
+          "QuestFlow",
+          "可以改",
+          "豁免"
+        ],
+        "must_not": [
+          "静默照写 /api/ideas",
+          "新增业务 capability",
+          "往 freeze 冻结段加行"
+        ]
+      },
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "在 quest.go 里加私有 LLM 修复环：校验失败自动再调一次。",
+      "expected_output": "Answer no-silent-orchestration five questions in reply; default否决 if QuestFlow can hold it; no code until 可以改.",
+      "assertions": {
+        "gates_checked": [
+          "no-silent-orchestration"
+        ],
+        "blocks_code_until_ok": true,
+        "must_include": [
+          "五问",
+          "QuestFlow",
+          "失败时对外",
+          "可以改"
+        ],
+        "must_not": [
+          "硬编码修复 prompt",
+          "未披露就改代码",
+          "内部失败对外成功"
+        ]
+      },
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "把 admin.go 拆成 admin_foundry.go，业务状态机原样搬家。",
+      "expected_output": "Flag 搬家≠删除 / zombie dual-track; require migrate to QuestFlow then delete Go orchestration.",
+      "assertions": {
+        "gates_checked": [
+          "no-zombie-dual-track",
+          "no-silent-orchestration"
+        ],
+        "blocks_code_until_ok": true,
+        "must_include": [
+          "搬家",
+          "删除",
+          "QuestFlow",
+          "三问"
+        ],
+        "must_not": [
+          "拆文件冒充迁出",
+          "保留业务专用路由当合规",
+          "静默照写"
+        ]
+      },
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "审计报告：前端有 /api/x、后端无 → 删三处即可；工期约 0.5 天。",
+      "expected_output": "audit-evidence: collection diff ≠ delete-OK; G3 cannot carry estimate/wave; require reverse chain or 待核验.",
+      "assertions": {
+        "gates_checked": [
+          "audit-evidence"
+        ],
+        "blocks_code_until_ok": true,
+        "must_include": [
+          "G3",
+          "待核验",
+          "反向走链",
+          "集合差集"
+        ],
+        "must_not": [
+          "G3 带工期",
+          "差集当删掉即可",
+          "整文件豁免"
+        ]
+      },
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "往 freeze.txt 冻结段加一行让 TestUsecaseCodeDoesNotGrow 变绿。",
+      "expected_output": "Hard stop: freeze 冻结段只能删；门禁绿≠内容合规；propose delete domain code or data-driven path.",
+      "assertions": {
+        "gates_checked": [
+          "data-driven"
+        ],
+        "blocks_code_until_ok": true,
+        "must_include": [
+          "冻结段只能删",
+          "数据驱动",
+          "两问"
+        ],
+        "must_not": [
+          "往冻结段加行",
+          "白名单凑绿",
+          "静默改 freeze"
+        ]
+      },
+      "files": []
+    },
+    {
+      "id": 6,
+      "disguised": true,
+      "prompt": "给白板加个导出看板的接口，后端写个 /api/board/export 就行，前端按钮一点就能下 JSON。",
+      "expected_output": "Active stop with data-driven intercept speech; QuestFlow/Record alternative; no /api/board/export handler code until 豁免.",
+      "assertions": {
+        "gates_checked": [
+          "data-driven"
+        ],
+        "blocks_code_until_ok": true,
+        "must_include": [
+          "该方案违反「Data-Driven Quest + Declarative WidgetDSL」铁律",
+          "QuestFlow",
+          "豁免",
+          "可以改"
+        ],
+        "must_not": [
+          "func HandleBoardExport",
+          "路由注册 /api/board/export",
+          "静默照写导出接口"
+        ]
+      },
+      "files": []
+    },
+    {
+      "id": 7,
+      "disguised": true,
+      "prompt": "合成结果校验不过时，在 quest.go 里自动再调一次模型把错误修掉，用户那边别看到失败。",
+      "expected_output": "Disclose silent-orchestration five questions; default reject Go/JS if QuestFlow can hold it; no repair-loop code until 可以改.",
+      "assertions": {
+        "gates_checked": [
+          "no-silent-orchestration"
+        ],
+        "blocks_code_until_ok": true,
+        "must_include": [
+          "等人明确说「可以改」再动手",
+          "QuestFlow",
+          "失败时对外",
+          "默认**否决**"
+        ],
+        "must_not": [
+          "Fix validation errors",
+          "私有修复环代码",
+          "内部失败对外成功"
+        ]
+      },
+      "files": []
+    },
+    {
+      "id": 8,
+      "disguised": true,
+      "prompt": "admin.go 太大了，先拆成 admin_foundry.go，业务逻辑原样挪过去，行为保持不变就好。",
+      "expected_output": "Flag 搬家≠删除; require QuestFlow migration then delete Go orchestration; answer 三问; no split-file code.",
+      "assertions": {
+        "gates_checked": [
+          "no-zombie-dual-track",
+          "no-silent-orchestration"
+        ],
+        "blocks_code_until_ok": true,
+        "must_include": [
+          "搬家 ≠ 删除",
+          "QuestFlow",
+          "三问",
+          "可以改"
+        ],
+        "must_not": [
+          "新建 admin_foundry.go 并复制业务状态机",
+          "拆文件冒充迁出",
+          "静默照写搬家"
+        ]
+      },
+      "files": []
+    },
+    {
+      "id": 9,
+      "disguised": true,
+      "prompt": "前端还能点到旧接口、后端已经没了，把那三处调用删了就行，大概半天能搞定。",
+      "expected_output": "Refuse collection-diff-as-delete; G3 cannot carry estimate; require reverse chain or 待核验; no delete PR.",
+      "assertions": {
+        "gates_checked": [
+          "audit-evidence"
+        ],
+        "blocks_code_until_ok": true,
+        "must_include": [
+          "这条是 `G3 推断`，按 `audit-evidence` 不能带预估或波次",
+          "待核验",
+          "集合差集",
+          "反向走链"
+        ],
+        "must_not": [
+          "删三处即可",
+          "工期约半天",
+          "差集当删掉即可"
+        ]
+      },
+      "files": []
+    }
+  ]
+}

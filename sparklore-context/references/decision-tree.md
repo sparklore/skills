@@ -1,81 +1,57 @@
-# Architecture Decision Tree
+# Architecture Decision Tree（现网）
 
-Follow this decision tree before making ANY changes.
+权威细则：`AGENTS.md` §5、`docs/02`、`docs/03`、四闸 skills。本页只做分流。
 
-## 1. Where does this code belong?
-
-```
-Does it involve business rules or state?
-  └─ YES → Domain Service (quest/agent/messaging/cms/forge)
-       └─ Contract structs → sparklore/pkg/<domain>/
-       └─ Behavior/implementation → <service>/internal/
-
-Does it involve routing events between domain and UI?
-  └─ YES → Bridge
-       └─ Registry mappings ONLY
-       └─ Zero business logic, zero HTML, zero HTTP
-
-Does it involve rendering HTML, SSE, or handling HTTP requests?
-  └─ YES → Web (thin client)
-       └─ NEVER subscribe to <domain>.event.*
-       └─ NEVER publish to <domain>.cmd.*
-       └─ ONLY ui.event.<userID>.> and ui.action.<userID>.*
-
-Is it a shared type/contract used by multiple services?
-  └─ sparklore/pkg/<domain>/  (or pkg/clientevent/, pkg/subjects/)
-```
-
-## 2. Which NATS namespace?
+## 1. 代码放哪？
 
 ```
-Publishing a domain fact (e.g., "quest started")?
-  └─ <domain>.event.<entityID>.<eventType>
-  └─ Include user_id at top level of payload
+业务工作流 / 提示词 / 看板矩阵表单 / 领域字段？
+  └─ YES → 合集 JSON / QuestFlow / Record / WidgetDSL body
+       └─ 禁止：业务 Go capability、/api/<feature>/*、widgetdsl 业务 kind
 
-Sending a UI update to a specific user?
-  └─ ui.event.<userID>.<domain>.<entityID>.<eventType>
-  └─ Only Bridge publishes here
+通用引擎能力（状态机、校验、genloop、Record/Bridge/Quest 入口）？
+  └─ forge 对应模块；名字与字段无业务词
 
-Sending a user action from browser?
-  └─ ui.action.<userID>.<domain>.<entityID>.<actionType>
-  └─ Only Web publishes here
+设备 / 媒体 / OS 桥接（相机、推流、云台）？
+  └─ clients capability（仅底层原生）
+
+平台 HTTP / 事件翻译？
+  └─ forge：quest / bff / bridge（bridge 可有 HTTP 门面，无 PG、无业务编排）
+
+本机用户端页面 / 本地 KV / 本机 Quest？
+  └─ sparklore-clients（hydrate / orb / extensions）
 ```
 
-## 3. New NATS subject needed?
+## 2. 数据怎么存？
 
 ```
-1. Open sparklore/pkg/subjects/<domain>.go
-2. Add constant following existing naming convention
-3. For dynamic subjects with %s placeholders, add a helper in helpers.go
-4. If UI-related, register Bridge mapping
-5. NEVER hardcode the subject string inline in a handler
+同步类用户数据？ → ud_sync（经 bridge HTTP 版本线）
+本机类？         → ud_local
+平台工作流真相？ → forge PG（QuestRun 等）
+缓存 / 内嵌 NATS？→ 投影或本机存储，不是跨设备唯一真相
 ```
 
-## 4. Working on web/ frontend?
+## 3. 改前过哪道闸？
 
 ```
-Am I writing an interaction_type string?
-  └─ Only in internal/adapter/ — use constants from pkg/<domain>/
+新增业务 capability / 专用路由 / widgetdsl 业务 kind？
+  └─ 停手 → data-driven 拦截话术 → 数据驱动替代方案
 
-Am I subscribing to NATS?
-  └─ Only ui.event.<userID>.> — never <domain>.event.*
+要在 Go/JS 加重试、串并行、prompt、兜底、旁路？
+  └─ 先答 no-silent-orchestration 五问 → 等人说「可以改」
 
-Am I publishing an action?
-  └─ Only ui.action.<userID>.<domain>.<entityID>.<actionType>
+删旧实现 / 疑似双轨（graph+flow、测产脱节、搬家）？
+  └─ no-zombie-dual-track 三问 → 定 SSoT 再删
 
-Am I handling signals?
-  └─ Apply ClientEvent.Payload blindly — never construct domain signals
-
-Am I extracting userID?
-  └─ ONLY from session middleware: c.Get("user_id").(string)
-  └─ NEVER from request body, query params, or headers
+写审计 / 台账？
+  └─ audit-evidence：每条 G1/G2/G3；G3 不带波次
 ```
 
-## 5. Before refactoring or renaming
+## 4. 怎么探路？
 
 ```
-1. gitnexus_impact({target: "symbolName", direction: "upstream"})
-   └─ Report HIGH/CRITICAL risk to user before proceeding
-2. Make changes
-3. gitnexus_detect_changes() — verify scope is expected
+1. graphify query "<问题>"
+2. 需要关系 → graphify path / explain
+3. 再读定位到的文件；禁止先全仓瞎扫
+4. 无 GitNexus
 ```

@@ -1,0 +1,61 @@
+# Delivery and acceptance
+
+This file only defines how to report and when work counts as done. Coding/testing practice → `engineering`. Charter before complex work → `session-plan`.
+
+**Replies to the user use the Chinese section headings below** (developers operate in Chinese). English here is for the LLM.
+
+## Per-step reply
+
+```markdown
+### 本步已完成
+- One sentence
+
+### 验收证据
+- 命令：`<command already run>`
+- 结果：PASS | FAIL — summary
+
+### 验收步骤（可复制）
+**前置：** repo root, deps, where accounts come from, which env vars are shell-local only.
+
+1. What to start / not start: process or container names, ports, who is the entry. Note port conflicts. If the project has a local console, name the card, which button, status and port; otherwise give commands.
+2. One action per step. When dependent on the previous step, write 「同一终端」 or 「另开终端」.
+3. **期望：** exit code, fields, on-page text, log keywords.
+4. **若失败：** most likely cause, which log, which step to return to.
+
+### 下一步动作
+- FAIL → fix only that, re-run the same command, do not switch topics or advance. Same failure symptom ≤3 repair attempts; then stop, report the blocker and what was tried; do not delete/weaken tests to force green (see `engineering`)
+- Same plan unfinished and this stage PASS → next step id
+- Whole plan PASS → stop and wait for the user 「验收通过」 (or `LGTM` / 「验收 OK」)
+```
+
+One primary instruction per step. Commands already run must still appear in human-reproducible steps. One-line renames / pure formatting may collapse to 1–2 steps but still need observable expectations.
+
+Forbidden: dumping only a start or test command; putting steps only in a doc; asking the user to open a page before the process is confirmed listening; on failure, telling the user to change unrelated inputs.
+
+When the user asks to finish in one go, pauses between steps may be skipped. A stage that is not green does not count as passed; required end-to-end checks for the close-out must not be skipped.
+
+When user acceptance points out a rule blind spot or repeated low-level mistakes: after fixing, ask whether to write it into the matching rule; architecture hard gates go only into `skills/sparklore-architecture-gates/`; process rules go into `session-plan` / `engineering` / `delivery-gate` etc. — do not default into gates.
+
+## UI
+
+For user-visible pages: state base URL, account source, menu or route, and the text/columns/buttons that must appear. Pure APIs → command output. Whether a visible entry exists → `visible-entry` only.
+
+### Verification loop（验证环：Feature Map → browser / CDP → then edit）
+
+For UI or “behavior visible on the page”: **reproduce first, then edit**. Prefer the local console top bar **「UI 验证环」** (`http://127.0.0.1:7789/ui-verify.html`): open map, start/stop client, check/regenerate map — click buttons; do not default to teaching terminal commands. Map artifact: `sparklore-clients/docs/feature-map.md` (code-generated; do not hand-edit). Full click steps and checklist: forge `docs/38-ops-ui-verify-feature-map.md`.
+
+**Copyable steps:**
+
+1. **定位：** console 「UI 验证环」→「打开 Feature Map」; search by entry copy / request path / filename; record `入口 file:line → method+path → handler file:line → 状态`. Status 「未注册 / 未解析」 only means a set-diff — **not** a causal “delete and done” (see `audit-evidence`).
+2. **起页：** confirm the user client is listening (or click 「启动用户端」) or open `http://127.0.0.1:8090`. Agent: `cursor-ide-browser` → `browser_navigate` → (if tab exists) `browser_lock` → `browser_snapshot`; for API fields use CDP `Runtime.evaluate` (`awaitPromise: true`) against the same map path.
+3. **复现：** walk the map to the visible entry; record **bad** evidence (screenshot, visible snapshot text, or CDP JSON). Cannot reproduce → **stop without editing**; report 「未能复现」 and steps tried; no guess-edits.
+4. **再改：** only the located chain; no drive-by refactors; no demo-only route / domain hardcoding.
+5. **验证消失：** same entry, same steps; the bad symptom must be gone. Evidence same shape as step 3. If JS literal requests changed: click 「重生成地图」 (or the matching client task card); commit the artifact; do not default to hand-running `FEATURE_MAP_UPDATE`.
+
+In the report paste: map row (or equivalent) → reproduce evidence → fix summary → evidence that it no longer reproduces.
+
+## Multiple options
+
+When two or more reasonable next options exist: list pros/cons, recommend exactly one. If more than three, expand only the first three. If the user does not object, follow the recommendation.
+
+Chinese reference (not installed): `zh/delivery-gate.md`

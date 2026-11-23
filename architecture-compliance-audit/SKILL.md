@@ -77,3 +77,23 @@ description: >-
 - 写了前置却没跑，**禁止**让它影响任何数字（预估 / 波次）。
 - 豁免按**调用链**写，点名豁免哪条链。禁止整文件或整子系统一次性豁免——同一个 `app.js` 里既有良性 SSE 汇聚，也有业务轮询 + 前端重试编排。
 - 引规则时连它指向文件的**段头与作用域**一起读（`freeze.txt` 的「引擎段可以增加」≠「冻结段只能删」）。
+
+## Eval 跑法（本地打分，不调模型）
+
+契约闸只查字段；打分器对**已写好的回答文件**按 `assertions.must_include` / `must_not` 逐条判 PASS/FAIL。
+
+1. **生成回答文件**：对 `evals/evals.json` 里每条 `prompt`，让人或 Agent 按本 SKILL 作答，把完整回答存成 Markdown：`<answers_dir>/<id>.md`（例如 `6.md` 对应 `"id": 6`）。缺文件算 FAIL，不能跳过。
+2. **校验契约**（forge 仓根或 skill 目录均可）：
+
+```bash
+python3 skills/architecture-compliance-audit/scripts/validate_evals.py
+```
+
+3. **打分**（任一 FAIL → 退出码 1）：
+
+```bash
+python3 skills/architecture-compliance-audit/scripts/score_evals.py skills/architecture-compliance-audit/evals/answers-pass
+python3 skills/architecture-compliance-audit/scripts/score_evals.py skills/architecture-compliance-audit/evals/answers-fail
+```
+
+仓库自带负向自测：`evals/answers-pass/` 期望全 PASS、exit 0；`evals/answers-fail/` 期望全 FAIL、exit 1。评分标准只在 eval 数据里，脚本不硬编码词表。

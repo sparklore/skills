@@ -1,0 +1,48 @@
+---
+description: 禁止在 Go/JS 里静默加编排、重试、兜底；动手前必须如实说明为什么、好处、为何不进 QuestFlow
+alwaysApply: true
+---
+
+# No Silent Orchestration
+
+「静默」 / *silent* = putting retry, fan-in/fan-out, prompts, failure fallbacks, or bypass triggers into Go/JS — or silently falling back to an old path — **without first telling a human**. Same family as `architecture` “no silent fallback” and `AGENTS.md` §5 zero-hardcoding warnings; this file targets **orchestration in code**.
+
+Live anti-patterns (copying them is a violation): `quest.go` synthesis repair loops, `gen.go` legacy generation pipeline, frontend `postMessage`/polling chaining `/api/quest/*` + `/api/admin/foundry/*`, `compile_fallback` silent fake-success, `follow.go` bypass, `bundle_synth` silent `normalize*` rewriting model output, CAS/write failure `return nil` presented as success. Ledger: `docs/04` §4.1.
+
+**Relocation is not compliance**: moving business orchestration from `admin.go` into `admin_foundry.go` / `admin_quest_services.go` is still silent Go orchestration. Correct fix: migrate into QuestFlow, then **delete** the Go orchestration.
+
+Chinese reference (not installed): `skills/claude/rules/zh/no-silent-orchestration.md`
+
+## Answer before editing (do not change code until done)
+
+Write 3–6 lines in the reply, then wait for the user to say 「可以改」 before editing:
+
+1. **Why change**: what is broken now (failure mode / who is hurt) — not “to make it better”.
+2. **What improves**: observable metrics (success rate, observability, configurability, one fewer dual-track).
+3. **Why not QuestFlow / collection data**: if it *could* live there but you put it in Go/JS → default **reject**.
+4. **External failure shape**: forbid “internal failure, external success”; metrics / X-Ray / logs must share one truth.
+5. **Exit**: temporary work needs a ledger entry + deadline or trigger (`architecture`).
+
+## Always forbidden (unless the section above passed and the user explicitly agreed)
+
+- Private LLM repair loops on engine hot paths, hardcoded repair prompts, dedicated `if <this business fails> then retry`
+- Silent deterministic fallback (LLM fail → template fake-success) without an explicit failure
+- Frontend `postMessage` / polling chaining multiple workflows (“fake orchestration” that dies on refresh)
+- New `/api/<feature>/*` or business capability for a business scenario (`data-driven` / AGENTS.md §5)
+- Dual-write, dual truth, silent fallback to an old pipeline (`no-zombie-dual-track`)
+- Empty success when storage/engine is not ready (`SyncStore == nil` → log and pretend OK)
+
+## Allowed (still requires disclosure in the first section)
+
+- Generic, business-agnostic validators / `genloop` structured self-heal (counts and policy in a public contract)
+- Pure tool capabilities (skeleton, X-Ray, sandbox files) without business prompts or flow order
+- Deletion-style moves of existing silent logic **out** of Go/JS into QuestFlow
+- Optimistic CAS retry: bounded attempts and **final failure must return error**
+
+## Anti-pattern → correct pattern
+
+`quest.go` concatenates `"Fix validation errors: ..."` and privately re-calls the LLM after synthesis failure → violation.  
+Correct: QuestFlow `repeat`/`branch`, or fail explicitly to the caller.
+
+Frontend chains `start → poll run → stage → install` via `postMessage`/timers → violation.  
+Correct: one QuestFlow (with `subquest`/`parallel`); the page fires once and subscribes to status.

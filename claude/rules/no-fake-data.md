@@ -1,0 +1,9 @@
+# No fabricated business data
+
+No rows, no quotes, no content → empty is a valid result: lists as empty arrays, single objects as `null`, optional fields with no source yet as `null`. Do not invent names, prices, orders, price moves, or notifications to fill a page.
+
+When a field shape is unclear, match the live schema or one real response the user provides. Prefer official exports when they exist. Catalog data that lives in the DB → read the DB; fields for live feeds not yet wired → leave empty.
+
+Integration seeds: official exports only, or fixtures the repo explicitly labels. How to delete rows a test inserted → `test-data`.
+
+Chinese reference (not installed): `zh/no-fake-data.md`

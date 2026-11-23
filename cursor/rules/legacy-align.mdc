@@ -1,0 +1,14 @@
+---
+description: When aligning to legacy, preserve cache-key semantics; document behavior diffs
+alwaysApply: true
+---
+
+# Align with legacy systems
+
+Use this file only when porting or comparing against a prior implementation. Empty-result shape → `no-fake-data`. Whether cache may be entity truth → `architecture`.
+
+1. If the legacy read path used a cache, the new implementation must preserve the same key semantics. Do not switch to “persist-only reads” without documenting the difference.
+2. Safer substitutes are allowed (DB lock instead of cache lock, signatures instead of shared tokens). You must state old vs new behavior.
+3. Record differences in the project’s alignment doc. If none exists, put them in the design note for this change.
+
+Chinese reference (not installed): `zh/legacy-align.md`

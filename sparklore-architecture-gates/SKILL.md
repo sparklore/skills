@@ -46,6 +46,26 @@ description: >-
 
 > 该方案违反「Data-Driven Quest + Declarative WidgetDSL」铁律。应把流程放进 QuestFlow / 合集数据；Go 只留原子工具。需要豁免请明确说「豁免」并登记 `docs/04`。
 
+## Eval 跑法（本地打分，不调模型）
+
+契约闸只查字段；打分器对**已写好的回答文件**按 `assertions.must_include` / `must_not` 逐条判 PASS/FAIL。`disguised: true` 的用例模拟普通需求口吻（prompt 不得出现「审计 / 合规 / 规则 / 闸 / 闸名」等考试暗示词），看 Agent 是否仍主动拦截。
+
+1. **生成回答文件**：对 `evals/evals.json` 里每条 `prompt`，让人或 Agent 按本 SKILL / `rules/` 作答，存成 `<answers_dir>/<id>.md`。缺文件算 FAIL。
+2. **校验契约**（forge 仓根）：
+
+```bash
+python3 skills/sparklore-architecture-gates/scripts/validate_evals.py
+```
+
+3. **打分**（任一 FAIL → 退出码 1；合格样例期望 exit 0，违规样例期望 exit 1）：
+
+```bash
+python3 skills/sparklore-architecture-gates/scripts/score_evals.py skills/sparklore-architecture-gates/evals/answers-pass
+python3 skills/sparklore-architecture-gates/scripts/score_evals.py skills/sparklore-architecture-gates/evals/answers-fail
+```
+
+打分器从 S2（`architecture-compliance-audit/scripts/score_evals.py`）**复制**而来（非跨 skill 参数化）：算法相同且刻意很小，各自 skill 自带 `ROOT`/`evals.json`，避免兄弟目录耦合。评分标准只在 eval 数据里。
+
 ## 装到本机各工具
 
 见 [INSTALL.md](INSTALL.md)。改 `rules/*.md` 后跑 `./sync-adapters.sh`，再拷到 Cursor / Claude 本地目录。

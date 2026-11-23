@@ -1,0 +1,25 @@
+# Engineering
+
+For simple changes: short plan, then stop when done. Whether a design note is required → `architecture`. Pass/fail and how to report acceptance → `delivery-gate`.
+
+## Before editing
+
+1. State scope, data flow, boundaries, and **what you will not change**. If requirements are unclear, ask at most 3 questions.
+2. Search for similar implementations first. Extend an existing function when you can. Do not extract a helper / base class / new layer without a second caller.
+3. When adding a file, function, table, or route, state what existing code lacks.
+4. Do not guess APIs, parameters, config, or third-party behavior. If still uncertain after looking it up, state assumptions and risks.
+
+## While editing
+
+- Follow existing layering and style. No unrelated rewrites, renames, or drive-by contract changes in other modules.
+- Do not add dependencies, abstractions, or config for hypothetical extension. Prefer one readable line when one line suffices.
+- **No over-coding:** If a small amount of code can finish the task with equivalent external behavior and correctness, do not inflate it with over-design (extra wrappers, abstraction layers, config, boilerplate, or "for later" extension points). Add complexity only when there is a second caller, a trust-boundary check, or an observable gain (correctness / performance / safety). Prefer deletion over addition. Line count is not a hard quota — judge whether code volume grew without need.
+
+## Testing
+
+- Add effective tests for new logic or changed branches, and actually run the relevant cases. Do not run the full suite unless the user asks.
+- Never claim 「已测试」 / 「已验证」 / 「可以运行」 ("tested" / "verified" / "ready to run") for checks you did not run. Do not weaken assertions or fixtures to force green.
+- Before finishing: compile or lint, error paths, N+1 or unbounded loops. When the approach is non-obvious, write a 1–3 line tradeoff.
+- Naming and cleanup for tests that insert DB rows → `test-data` only.
+
+Chinese reference (not installed): `zh/engineering.md`

@@ -1,0 +1,82 @@
+---
+description: 审计证据分级：每条发现标 G1 已确认 / G2 读过链 / G3 推断；G3 不得带预估或波次；差集不是结论
+alwaysApply: true
+---
+
+# Audit evidence grades（审计证据分级）
+
+Applies to any audit report, ledger, debt list, or compliance re-check (`docs/*-ledger-*.md`, audit replies, PR review conclusions).
+
+Division of labor: `delivery-gate` owns how to report and when work passes; the three architecture gates own whether a finding’s **content** violates rules; this file owns whether **evidence is strong enough** to conclude.
+
+Chinese reference (not installed): `skills/claude/rules/zh/audit-evidence.md`
+
+## Three grades (required on every finding — first table column)
+
+| Grade | Meaning | How obtained |
+|---|---|---|
+| `G1 已确认` | Command ran; output can be pasted | Real grep / test / build output |
+| `G2 读过链` | Both ends of the call chain were read | Visible entry → handler → callee → return value; each hop `file:line` |
+| `G3 推断` | Indirect evidence only, or only one site read | Single grep hit, analogy, memory |
+
+One claim per row. If “location” is G1 but “fix direction” is G3 → **split into two rows**; do not share one grade.
+
+## Two mandatory table columns (`G2` audit trail)
+
+Besides the evidence grade, every finding needs these cells:
+
+| Column | What to write | If not walked |
+|---|---|---|
+| **入口→出口** | Both ends of the call chain, each with `file:line`. Cross-tier: 「UI → handler → 返回值」; engine-internal: 「调用方 → 被调方」 | Write **未走链** — never leave blank |
+| **两端字段名** | Fields the frontend expects vs keys the backend actually returns | Engine-internal: 「不适用」; cross-tier not checked: **未走链** |
+
+**Rows marked 未走链 must not alone justify Must-fix or a wave.** Raise them to `G2` before scheduling.
+
+Why these columns: `G2` means “chain was read”, but if the table has no cells for that, “was it really read?” cannot be audited and `G2` becomes self-certified. Issue 37 R2 was judged “frontend dead call, delete three sites” because there was no **两端字段名** cell — mismatches like `enrich_job` vs `enrich_run_id`, `async_running` vs `workflow_async` would have surfaced immediately. After adding the columns on 2026-11-19, 8 of 17 rows showed **未走链**, including 5 labeled `G1` — those `G1`s meant “location confirmed”, not “fix confirmed”, which violates “one claim per row”.
+
+## Always forbidden (any one = violation debt)
+
+| Forbidden | Live anti-example |
+|---|---|
+| A `G3` row carrying **estimates, waves, schedule, or option choice**; only 「待核验 + 下一步跑什么」 | Issue 37 R1 said “must find all callers” yet still wrote “~1 line / P0”; both callers discarded with `_ =`, and `OnEvent` has no return |
+| Treating a **set difference** as causal (frontend has / backend lacks, file exists / zero calls). Diffs support “what is missing”, not “delete and done” | Issue 37 R2: route diff → “dead call, delete three”; the button hits live `/api/admin/foundry/import` and backend still starts enrich run |
+| Writing a prerequisite and never running it, yet letting it affect any number | Same R1 |
+| Citing a rule name without reading the target file’s **section header and scope** | Issue 37 R3 applied “freeze section may only shrink” to `freeze.txt` **engine-section** lines, which say “may grow if explained in the PR” |
+| Writing 「干净」 / "clean" on zero tool hits without proving the tool scanned the target | Audit checklists used relative `sparklore-clients/`. **2026-11-19 measurement**: bare `rg`/`grep` on a missing path exits **2** (red), not fake-green; the real liar is `\| wc -l` — hit count 0, exit 0, “not scanned” looks identical to “clean”. Also: `go test -run <name that matches nothing>` prints `ok … [no tests to run]` and still **exits 0** |
+| One-shot exemption of a whole file or subsystem. Exemptions must be **per call chain**, naming which chain | Issue 37 cleared twelve `app.js` timers as fine and missed enrich HUD polling + frontend retry orchestration |
+| Claiming contracts are correct after scanning only routes and filenames | Issue 37 missed response-field mismatch: frontend expects `enrich_job` / `ai_mode:'async_running'`; backend has neither |
+
+## Allowed
+
+- Label `G3` as 「待核验」 only, and state what to run to raise the grade
+- Label 「未能核验」 and why (no env, no auth, needs DB, needs device)
+- Cite an existing ledger entry as `G1` only if you paste that doc’s id and section
+
+## Minimum upgrade actions
+
+| From | Do |
+|---|---|
+| `G3`→`G2` | Walk forward from visible entry to backend return; record every hop `file:line`; **fill both field-name columns verbatim** (required — skipping this is how R2 was misjudged) |
+| →`G1` | Paste the command and its output into the report |
+
+## Stop quote (must be verbatim)
+
+> 这条是 `G3 推断`，按 `audit-evidence` 不能带预估或波次。要么先顺调用链升到 `G2`（我可以现在走），要么只登记为「待核验」。
+
+## Three machine gates already shipped (not conscience-based)
+
+Pure text rules failed in the wild — the “live anti-example” column mostly comes from **violations of this file**. These three are `PreToolUse` gates in forge `scripts/hooks/` (`bash-guard.py` / `bash-guard-test.sh` / `README.md`):
+
+| Gate | Blocks |
+|---|---|
+| **M1** | `go test` with `-run` but without `-v` |
+| **M2** | Scanning with relative `sparklore-clients/` when this checkout has no clients tree |
+| **M3** | `pkill` / `killall` by pattern |
+
+So “zero hits ⇒ clean” is already machine-blocked where M1/M2 apply; this file still covers what they do not (human judgment, table filling, set-diff as causation). No bypass switch; each gate has a legitimate alternative command shape.
+
+## Related rules
+
+- How to report / acceptance steps → `delivery-gate`
+- What audit commands to run / reverse chain → skill `architecture-compliance-audit`
+- Whether finding content violates architecture → `data-driven` / `no-silent-orchestration` / `no-zombie-dual-track`

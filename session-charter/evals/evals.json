@@ -1,0 +1,101 @@
+{
+  "skill_name": "session-charter",
+  "schema_version": 1,
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "开会话：清洗 docs/04 台账一条债，Plan only。",
+      "expected_output": "Full Session Charter template with 唯一目标 / 可写只读禁止 / 交付物 / 验收 / 模式=Plan only; wait for confirm; no writes.",
+      "assertions": {
+        "sections_in_order": [
+          "唯一目标（一句话）",
+          "仓库",
+          "交付物",
+          "验收",
+          "模式"
+        ],
+        "writes_files_before_confirm": false,
+        "max_clarifying_questions": 3,
+        "must_include": ["唯一目标", "可写", "禁止", "验收", "Plan only"],
+        "must_not": ["确认前写仓", "Agent execute 开干", "跳过验收步骤"]
+      },
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "本会话合同：帮我改东西。",
+      "expected_output": "Vague input → fill template with blanks or ≤3 targeted questions; still emit all five sections; no writes before confirm.",
+      "assertions": {
+        "sections_in_order": [
+          "唯一目标（一句话）",
+          "仓库",
+          "交付物",
+          "验收",
+          "模式"
+        ],
+        "writes_files_before_confirm": false,
+        "max_clarifying_questions": 3,
+        "must_include": ["唯一目标", "可写", "验收", "模式"],
+        "must_not": ["超过 3 个澄清问题", "确认前写文件", "空 charter 直接开干"]
+      },
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "用默认 charter：重构 sparklore-clients/assets/hydrate.js，Agent execute。",
+      "expected_output": "Confirm default charter in one sentence; mode Agent execute; remind session-plan Sign-off gate / C=是 before edits.",
+      "assertions": {
+        "sections_in_order": [
+          "唯一目标（一句话）",
+          "仓库",
+          "交付物",
+          "验收",
+          "模式"
+        ],
+        "writes_files_before_confirm": false,
+        "max_clarifying_questions": 3,
+        "must_include": ["hydrate.js", "Agent execute", "session-plan", "可写"],
+        "must_not": ["未确认就改文件", "跳过签字门", "扩大到无关模块"]
+      },
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "session charter：同时做 Foundry 导入迁出 + WidgetDSL 新 kind + 全仓 purge。",
+      "expected_output": "Reject multi-goal charter; force single 唯一目标 or split into multiple sessions; do not start execute.",
+      "assertions": {
+        "sections_in_order": [
+          "唯一目标（一句话）",
+          "仓库",
+          "交付物",
+          "验收",
+          "模式"
+        ],
+        "writes_files_before_confirm": false,
+        "max_clarifying_questions": 3,
+        "must_include": ["唯一目标", "拆", "确认后再开始"],
+        "must_not": ["多目标一起开干", "新增 widgetdsl 业务 kind", "确认前写仓"]
+      },
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "已贴完整 charter（Plan only，可写 docs/design/）。请开始。",
+      "expected_output": "One-sentence restate confirm; Plan only → read-only / plan docs only; no code writes; remind 验收 steps.",
+      "assertions": {
+        "sections_in_order": [
+          "唯一目标（一句话）",
+          "仓库",
+          "交付物",
+          "验收",
+          "模式"
+        ],
+        "writes_files_before_confirm": false,
+        "max_clarifying_questions": 0,
+        "must_include": ["Plan only", "docs/design", "验收步骤"],
+        "must_not": ["改 Go/JS", "Agent execute", "跳过复述确认"]
+      },
+      "files": []
+    }
+  ]
+}

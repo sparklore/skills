@@ -1,0 +1,49 @@
+---
+description: 禁止僵尸代码与双轨：生产零调用却靠测试/迁移/开关续命；删旧不搬家；单真相源
+alwaysApply: true
+---
+
+# No Zombie / Dual-Track
+
+「僵尸」 / *zombie* = production no longer uses the path, but tests, boot migrations, compat branches, flags, or docs keep it alive so static scans still look “in use”.  
+「双轨」 / *dual-track* = old and new both read/write, or silent coexistence like `if old == nil { new }`.
+
+Chinese reference (not installed): `skills/claude/rules/zh/no-zombie-dual-track.md`
+
+## Judgment (any one = violation debt)
+
+| Signal | Meaning |
+|---|---|
+| Production entry passes `nil` / never calls; tests still `Open(":memory:")` the old impl heavily | Test/prod skew |
+| `extensions` are pure `flow`, but compiler / BFF / PG still treat `graph` as first-class | Dual persistence truth |
+| Delete a large file and same-commit add a same-size same-duty file | **Relocation ≠ deletion** |
+| Frontend still calls deleted routes; UI copy still says 「规则兜底」 / "rule fallback" | Dead call / fake capability |
+| Guards like `SyncStore == nil` turn “not ready” into empty success | Failure swallowed |
+
+## Always forbidden
+
+- Keep adding features on files already judged dead (anti-example: stacking Quest threads on legacy `sqlite.go`)
+- Dual-write, dual-read, silent fallback to old pipelines / stores / compilers
+- Compat flags with no deadline and no ledger (`architecture`)
+- Using “tests are green” to prove the old impl is still legitimate: tests must run a path **isomorphic to production** (e.g. `udboot.Open(":memory:")`)
+- Claiming 「已 purge」 / "purged" while keeping `CompileVisualGraph` / `wf.graph` / old APIs as default writable paths
+
+## Definition of done for deletion-style changes
+
+1. **Production entry** has zero references (`cmd/*/main.go`, route tables, extension JSON)  
+2. **Tests** move to the new path; old fixtures deleted  
+3. **Dependencies** dropped when unused (e.g. remove SQLite from `go.mod` if gone)  
+4. **Docs / ledger / freeze lists** updated; do not green the gate by editing tests only  
+5. Optional projections (e.g. topology) must state “compiled live from `flow`” — do not persist a second truth
+
+## Three questions before editing (write into the reply)
+
+1. Who calls this in production? Is the call count zero?  
+2. If deleted, what turns red — a real product path or zombie life-support?  
+3. Is there a second truth (`graph`/`flow`, SQLite/KV, remote/local engine)? Decide SSoT before deleting.
+
+## Related rules
+
+- Orchestration in Go/JS → `no-silent-orchestration`  
+- Business names in code → `data-driven`  
+- Bounded transitions → `architecture` ledger + deadline  

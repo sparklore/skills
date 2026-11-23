@@ -1,0 +1,7 @@
+{
+  "blenderExe": "/Applications/Blender.app/Contents/MacOS/Blender",
+  "addonHost": "127.0.0.1",
+  "addonPort": 9876,
+  "httpPort": 9877,
+  "workerPort": 9879
+}
