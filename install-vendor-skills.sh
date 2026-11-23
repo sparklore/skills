@@ -22,13 +22,21 @@ FORGE="$(cd "$ROOT/.." && pwd)"
 
 [ -d "$VENDOR" ] || { echo "missing vendor dir: $VENDOR" >&2; exit 1; }
 
-# 每行 <探测父目录>:<写入根目录>
-FLAT_TARGETS="
+# 家目录目标，每行 <探测父目录>:<写入根目录>。
+# 父目录不存在＝这台机器没装那个工具，跳过，不凭空造。
+HOME_TARGETS="
 ${HOME}/.claude:${HOME}/.claude/skills
-${FORGE}/.claude:${FORGE}/.claude/skills
 ${HOME}/.cursor:${HOME}/.cursor/skills
-${FORGE}/.cursor:${FORGE}/.cursor/skills
-${FORGE}/.agents:${FORGE}/.agents/skills
+"
+
+# 项目内目标：这三处归本仓所有，**无条件创建**。
+# 不能沿用「父目录不存在就跳过」——它们都在 .gitignore 里，全新克隆时三个都不存在，
+# 于是首次安装会跳过 vendor，而随后的 sync-adapters 又把目录建出来（只放自研 skill）,
+# 结果新成员必须再跑一遍 install-local.sh 才齐。
+PROJECT_SKILL_ROOTS="
+${FORGE}/.claude/skills
+${FORGE}/.cursor/skills
+${FORGE}/.agents/skills
 "
 
 # Antigravity 全局：有 plugin.json 的走整包（config/plugins/），没有的走打散（config/skills/）。
@@ -57,18 +65,10 @@ localize_blender() {
   echo "  localized blender-modeling paths -> $dest"
 }
 
-written=0
-skipped=0
-
-for entry in $FLAT_TARGETS; do
-  parent="${entry%%:*}"
-  dest_root="${entry#*:}"
-  if [ ! -d "$parent" ]; then
-    echo "skipped: not present -> $dest_root"
-    skipped=$((skipped + 1))
-    continue
-  fi
-  n=0
+install_flat() {
+  local dest_root="$1"
+  local n=0
+  local pkg_dir skill_dir
   for pkg_dir in "$VENDOR"/*/; do
     for skill_dir in "$pkg_dir"skills/*/; do
       [ -f "${skill_dir}SKILL.md" ] || continue
@@ -78,6 +78,25 @@ for entry in $FLAT_TARGETS; do
     done
   done
   echo "installed $n vendor skills -> $dest_root"
+}
+
+written=0
+skipped=0
+
+for entry in $HOME_TARGETS; do
+  parent="${entry%%:*}"
+  dest_root="${entry#*:}"
+  if [ ! -d "$parent" ]; then
+    echo "skipped: not present -> $dest_root"
+    skipped=$((skipped + 1))
+    continue
+  fi
+  install_flat "$dest_root"
+  written=$((written + 1))
+done
+
+for dest_root in $PROJECT_SKILL_ROOTS; do
+  install_flat "$dest_root"
   written=$((written + 1))
 done
 

@@ -78,8 +78,9 @@ Antigravity 同时发现 `config/skills/` 和 `config/plugins/*/skills/`，同�
 `vendor/` 保持上游原样，改写只发生在产物上，升级覆盖 `vendor/` 后重跑安装即自动重新改写。
 要覆盖仍可自行 `export BLENDER_SKILL_DIR=...`（`${VAR:-默认}` 形式，env 优先）。
 
-改写用 `find` + `perl`（每台 macOS 自带），不依赖 `python3`——`python3` 只在装了 Xcode 命令行工具的机器上才有，
-新成员机器上可能没有，而 `set -euo pipefail` 下缺它会让整个安装（含四闸）一起失败。
+改写用 `find` + `perl`（每台 macOS 无条件自带），本脚本因此不需要 `python3`。
+注意别据此以为整条安装链不要 `python3`：入口 `install-local.sh` 第一步的 `sync-tool-rules.sh:16`
+是 `exec python3`，生成规则包必须有它。所以这里换 perl 只是少了一处依赖，不是清零。
 
 **新成员**：`git submodule update --init --recursive && ./skills/install-local.sh`，没有第二步。详见 forge [`README.md`](../README.md) §新成员。
 
