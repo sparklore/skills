@@ -84,22 +84,23 @@ Antigravity 同时发现 `config/skills/` 和 `config/plugins/*/skills/`，同�
 
 **新成员**：`git submodule update --init --recursive && ./skills/install-local.sh`，没有第二步。详见 forge [`README.md`](../README.md) §新成员。
 
-### 已装来源（4 个，21 个 skill）
+### 已装来源（5 个，22 个 skill）
 
 **`cinematic-storytelling`**（7）：`silent-web-cinema`（orchestrator）、`storytelling`、`brand-storytelling`、`filmmaker`、`scroll-world-storytelling`、`cinematic-scroll-storytelling`、`motion-and-storytelling`
 
 **`threejs-3d-gamedev`**（12）：`threejs-fundamentals`、`threejs-geometry`、`threejs-lighting`、`threejs-materials`、`threejs-shaders`、`threejs-postprocessing`、`threejs-performance`、`ghibli-environment-art`、`camera-systems`、`game-development`（orchestrator，下辖 10 个子 skill 由它路由读取，不单独注册）、`img2threejs`、`blender-modeling`
 
-**单 skill 来源**（2，无 `plugin.json`，从各自原作者仓逐字取回，溯源见各目录 `SOURCE.md`）：
+**单 skill 来源**（3，无 `plugin.json`，从各自原作者仓逐字取回，溯源见各目录 `SOURCE.md`）：
 
 | skill | 上游 | 许可 |
 |---|---|---|
 | `captions-overlay` | [`heygen-com/hyperframes`](https://github.com/heygen-com/hyperframes) `.agents/skills/captions-overlay` @ `8c31cb3` | Apache-2.0 |
 | `impeccable` | [`pbakaus/impeccable`](https://github.com/pbakaus/impeccable) `.agents/skills/impeccable` @ `b49177d`（自标 v4.10.0） | Apache-2.0 |
+| `copywriting` | [`pedronauck/skills`](https://github.com/pedronauck/skills) `skills/marketing/copywriting` @ `71a9600`（自标 v2.3.5） | MIT |
 
-这两个是为补 `silent-web-cinema` 的断引用而取的——打包者把它们放在另外两个包里，本仓拿不到那两个包。
+这三个都是为补 `silent-web-cinema` 的断引用而取的——打包者把它们放在另外两个包里（`hyperframes-video-studio`、`frontend-ui-ux`、`writing-and-agent-ops`），那几个包不存在于任何公开源。`copywriting` 的归属是这么定下的：同一打包包里的 `brand-storytelling` 已署名 `pedronauck/skills`，该仓 `skills/marketing/` 下正好同时有 `copywriting` 与 `humanizer`（与打包者列的那一对一致），再用三问门原文逐条比对确认。
 
-只有 5 个会被模型自动触发：`silent-web-cinema`、`scroll-world-storytelling`、`threejs-fundamentals`、`ghibli-environment-art`、`blender-modeling`。其余 14 个带 `disable-model-invocation: true`，需显式调用。
+9 个会被模型自动触发：`silent-web-cinema`、`scroll-world-storytelling`、`motion-and-storytelling`、`copywriting`、`captions-overlay`、`impeccable`、`threejs-fundamentals`、`ghibli-environment-art`、`blender-modeling`。其余 13 个带 `disable-model-invocation: true`，需显式调用。（此处原写「5 个 / 14 个」，是 19 个 skill 时期的旧数，且漏算了没有该标记的 `motion-and-storytelling`；现数按 frontmatter 实测。）
 
 ### 启用前置（装了 skill 不等于能跑）
 
@@ -122,9 +123,9 @@ node ~/.claude/skills/blender-modeling/scripts/blender-rt.mjs viewport doctor
 ### 已知缺口
 
 - `threejs-3d-gamedev/README.md` 列了 `godot-gdscript-patterns`，**包内无此目录**，装不了。
-- `silent-web-cinema` 正文引用的 3 个外包 skill 里，`captions-overlay` 与 `impeccable` 已从各自原作者仓取回补齐（见上文「单 skill 来源」），**只剩 `copywriting` 一条断着**。没补它是因为社区至少三四个同名 skill 内容各异，无法判断打包者用的是哪个，瞎挑一个比留着更坏；而它被引用处（`SKILL.md:40`）要用的 Three-Question Gate 三个问题已在正文内联写全。
+- `silent-web-cinema` 正文引用的 3 个外包 skill **已全部补齐**（`captions-overlay`、`impeccable`、`copywriting`，见上文「单 skill 来源」）。`SKILL.md:10` 列的 9 个协作 skill 现在 9/9 可解析。但 `copywriting` 带进来两条新事实：① 打包者在 `SKILL.md:40` 把三问门第 2 问转述成「Is it specific?」，上游原文是「Can it be proven true or false?」（可证伪），判据不同——裁文案时以 `copywriting` 原文为准，`vendor/` 不改上游文本；② 它自己 frontmatter 的 description 指向 `copy-editing` / `emails` / `offers` 三个 skill，上游仓里并不存在（已核全量清单），属软指针不是硬依赖，正文自洽。详见 `vendor/copywriting/SOURCE.md`。
 - `captions-overlay` 自己声明「applies ON TOP of the `/hyperframes` skill's `references/captions.md`」，那个主 skill 本仓没装（HyperFrames 视频渲染专用），所以它这一层引用仍悬空。要用的 drop / rail / embed 字幕模型在它本文件里是完整的。
-- 19 个 skill 均无 `evals/`，不在本仓契约闸覆盖范围内，也不在 `ALL_SKILLS` 白名单里。
+- 22 个 skill 里只有 `copywriting` 自带 `evals/`（上游原样带来），其余 21 个没有，不在本仓契约闸覆盖范围内；22 个都不在 `ALL_SKILLS` 白名单里。
 - `blender-modeling` 装出来的 `.md` 里的 `SKILL_DIR` 默认路径与上游不同（见上文「路径本地化」）。这是产物层的改写，`vendor/` 源文件未改。
 - `scroll-world-storytelling/demo/video/assets/contract-flight.mp4`（3.7M）**已从本仓删除**，这是 `vendor/` 唯一偏离上游原样副本之处。同目录的 `contract-flight-source.svg` 与海报 `contract-flight.webp` 保留，demo 退化为静态海报而非报错；需要样片时按该目录 `README.md` 的参数用 ffmpeg 从源 SVG 重生成，文件名保持不变。
 
