@@ -67,6 +67,19 @@ Antigravity 全局只走整包形态：它同时发现 `config/skills/` 和 `con
 
 打散产物是生成物：手改会被下次安装覆盖，要改请改 `vendor/` 下的源。
 
+**路径本地化（组员零配置的关键）**：上游 `blender-modeling` 的文档把 `SKILL_DIR` 默认写成
+`$HOME/.agents/skills/blender-modeling`——那是上游自己的安装约定，本仓不往那里装，所以默认值必然落空。
+安装脚本在每次 `rsync` 之后把该 skill 的 `.md` 里这个路径改写为**该镜像自身的绝对路径**，
+于是任何工具、任何 shell 都不必设 `BLENDER_SKILL_DIR`。改写覆盖三种上游写法：`$HOME/...`、`~/...`，
+以及 `references/cli-reference.md` 可复制 Python 片段里泄漏的上游作者本机路径 `/Users/<他的用户名>/...`。
+`vendor/` 保持上游原样，改写只发生在产物上，升级覆盖 `vendor/` 后重跑安装即自动重新改写。
+要覆盖仍可自行 `export BLENDER_SKILL_DIR=...`（`${VAR:-默认}` 形式，env 优先）。
+
+改写用 `find` + `perl`（每台 macOS 自带），不依赖 `python3`——`python3` 只在装了 Xcode 命令行工具的机器上才有，
+新成员机器上可能没有，而 `set -euo pipefail` 下缺它会让整个安装（含四闸）一起失败。
+
+**新成员**：`git submodule update --init --recursive && ./skills/install-local.sh`，没有第二步。详见 forge [`README.md`](../README.md) §新成员。
+
 ### 已装的两个包（19 个 skill）
 
 **`cinematic-storytelling`**（7）：`silent-web-cinema`（orchestrator）、`storytelling`、`brand-storytelling`、`filmmaker`、`scroll-world-storytelling`、`cinematic-scroll-storytelling`、`motion-and-storytelling`
@@ -79,15 +92,25 @@ Antigravity 全局只走整包形态：它同时发现 `config/skills/` 和 `con
 
 | skill | 还需要 |
 |---|---|
-| `blender-modeling` | 本机 Blender + Node ≥ 20；`BLENDER_SKILL_DIR` |
-| `img2threejs` | Python 3.10+；可选视觉适配器 `uv sync --project integrations/vision --python 3.11`（SAM2 / Depth Anything V2 / MediaPipe）；`IMG2THREEJS_SHOWCASE_ROOT` |
+| `blender-modeling` | 本机 Blender + Node ≥ 20。**无需设环境变量**，路径已本地化 |
+| `img2threejs` | Python 3.10+；可选视觉适配器 `uv sync --project integrations/vision --python 3.11`（SAM2 / Depth Anything V2 / MediaPipe）。`IMG2THREEJS_SHOWCASE_ROOT` / `IMG2THREEJS_REQUIRE_SHOWCASE` 只影响该 skill 自带的 runtime 测试，日常使用不需要 |
 | `scroll-world-storytelling` | ffmpeg |
+
+组员自检（不需要先配任何东西，路径已本地化）：
+
+```bash
+node ~/.claude/skills/blender-modeling/scripts/blender-rt.mjs viewport doctor
+```
+
+`ok: true` 即通。缺 Blender 时装：`brew install --cask blender`（约 1 GB，装完 `blenderExe` 自动发现，
+`blenderFrom: auto:install`，不必设 `BLENDER_RT_EXE`）。首次要连上 GUI 跑 `viewport launch` 一键拉起并自动 Connect。
 
 ### 已知缺口
 
 - `threejs-3d-gamedev/README.md` 列了 `godot-gdscript-patterns`，**包内无此目录**，装不了。
 - `silent-web-cinema` 等引用了 `copywriting`、`captions-overlay`、`impeccable` —— 它们属于上游另三个包（`writing-and-agent-ops`、`hyperframes-video-studio`、`frontend-ui-ux`），本仓没有，引用会断。
 - 19 个 skill 均无 `evals/`，不在本仓契约闸覆盖范围内，也不在 `ALL_SKILLS` 白名单里。
+- `blender-modeling` 装出来的 `.md` 里的 `SKILL_DIR` 默认路径与上游不同（见上文「路径本地化」）。这是产物层的改写，`vendor/` 源文件未改。
 - `scroll-world-storytelling/demo/video/assets/contract-flight.mp4`（3.7M）**已从本仓删除**，这是 `vendor/` 唯一偏离上游原样副本之处。同目录的 `contract-flight-source.svg` 与海报 `contract-flight.webp` 保留，demo 退化为静态海报而非报错；需要样片时按该目录 `README.md` 的参数用 ffmpeg 从源 SVG 重生成，文件名保持不变。
 
 ### 升级方式
