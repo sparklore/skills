@@ -1,0 +1,11 @@
+{
+  "name": "blender-modeling",
+  "version": "2.5.0",
+  "description": "Portable Blender modeling, assembly verification, and real-time GUI/headless bridge skill for AI coding agents.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}

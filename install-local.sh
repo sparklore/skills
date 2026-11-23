@@ -3,6 +3,7 @@
 #   ~/.claude/{rules,skills}
 #   ~/.cursor/{rules,skills}
 #   <forge>/.cursor/{rules,skills} 与 <forge>/.agents/skills
+# 另外 install-vendor-skills.sh 装 vendor/ 的三方包（含 ~/.gemini 的 Antigravity 目标）。
 #
 # Usage（在 skills/ 下，或由本地控制台调用）:
 #   ./install-local.sh
@@ -13,6 +14,10 @@ ROOT="$(cd "$(dirname "$0")" && pwd)"
 
 # 1) 全量规则包（含非闸 + 四闸生成镜像）→ ~/.claude/rules + ~/.cursor/rules + 项目 .cursor/rules
 "$ROOT/sync-tool-rules.sh" --install-local
+
+# 1.5) 三方 vendor 包（vendor/*/skills/* 打散 + Antigravity 整包）
+# 放在 GATES 之前：下面几条是 exec，会替换进程，之后的命令不会执行。
+"$ROOT/install-vendor-skills.sh"
 
 # 2) 四闸 adapters 再写一遍（与上重合，保证只勾四闸时也走得通）+ skills 树
 GATES="$ROOT/sparklore-architecture-gates/sync-adapters.sh"

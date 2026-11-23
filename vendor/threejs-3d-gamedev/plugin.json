@@ -1,0 +1,11 @@
+{
+  "name": "threejs-3d-gamedev",
+  "displayName": "Three.js, 3D Modeling & Game Dev",
+  "description": "Three.js (WebGL/WebGPU/TSL) fundamentals, shaders, lighting, materials, Studio Ghibli stylized environments, camera systems, and Blender 3D modeling.",
+  "version": "1.0.0",
+  "suggestedPrompts": [
+    "Build a Three.js scene with custom GLSL shaders and post-processing bloom",
+    "Style this 3D environment in a Studio Ghibli gouache and cel-shaded aesthetic",
+    "Model and render a 3D object in Blender using the local bridge workflow"
+  ]
+}
