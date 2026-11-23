@@ -31,8 +31,9 @@ ${FORGE}/.cursor:${FORGE}/.cursor/skills
 ${FORGE}/.agents:${FORGE}/.agents/skills
 "
 
-# Antigravity 全局只走整包形态：它同时发现 config/skills/ 与 config/plugins/*/skills/，
-# 两处都写会让同一个 skill 注册两次；整包还多带 plugin.json 的 suggestedPrompts 和 logo。
+# Antigravity 全局：有 plugin.json 的走整包（config/plugins/），没有的走打散（config/skills/）。
+# 它两处都发现，所以同一个 skill 只能进一处，否则注册两次；按有无 plugin.json 分流天然不重叠。
+# 整包形态还多带 plugin.json 的 suggestedPrompts 和 logo。
 PKG_TARGETS="
 ${HOME}/.gemini/config:${HOME}/.gemini/config/plugins
 "
@@ -97,6 +98,27 @@ for entry in $PKG_TARGETS; do
   done
   echo "installed $n vendor packages -> $dest_root"
   written=$((written + 1))
+done
+
+# 没有 plugin.json 的 vendor 目录是「单 skill 来源」（从原作者仓直接取回的个别 skill），
+# 装不成 Antigravity 整包，改写进它同样会发现的 config/skills/。
+for entry in $PKG_TARGETS; do
+  parent="${entry%%:*}"
+  [ -d "$parent" ] || continue
+  flat_root="$parent/skills"
+  n=0
+  for pkg_dir in "$VENDOR"/*/; do
+    [ -f "${pkg_dir}plugin.json" ] && continue
+    for skill_dir in "$pkg_dir"skills/*/; do
+      [ -f "${skill_dir}SKILL.md" ] || continue
+      sync_tree "${skill_dir%/}" "$flat_root/$(basename "$skill_dir")"
+      localize_blender "$flat_root/$(basename "$skill_dir")"
+      n=$((n + 1))
+    done
+  done
+  if [ "$n" -gt 0 ]; then
+    echo "installed $n non-plugin vendor skills -> $flat_root"
+  fi
 done
 
 echo "done. vendor targets written=$written skipped=$skipped"

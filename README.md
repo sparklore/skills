@@ -60,8 +60,11 @@ vendor/<包>/
 | Cursor | `~/.cursor/skills/` · `<forge>/.cursor/skills/` | 打散 |
 | Antigravity（工作区） | `<forge>/.agents/skills/` | 打散 |
 | Antigravity（全局） | `~/.gemini/config/plugins/<包>/` | **整包**，保住 `plugin.json` 的 `suggestedPrompts` 与 logo |
+| Antigravity（全局，单 skill 来源） | `~/.gemini/config/skills/` | 打散 |
 
-Antigravity 全局只走整包形态：它同时发现 `config/skills/` 和 `config/plugins/*/skills/`，两处都写会让同一个 skill 注册两次。
+Antigravity 同时发现 `config/skills/` 和 `config/plugins/*/skills/`，同一个 skill 进两处就注册两次。
+所以按**有无 `plugin.json`** 分流：有的走整包，没有的（从原作者仓直接取回的单 skill）走打散。
+两者天然不重叠。
 
 目标父目录不存在就跳过并打印（没装 Antigravity 的机器不会凭空造 `~/.gemini`），装好后重跑一次即可。`~/.agents/skills/` 归另一个 skill 管理器（`.skill-lock.json`）管，脚本不碰。
 
@@ -80,11 +83,20 @@ Antigravity 全局只走整包形态：它同时发现 `config/skills/` 和 `con
 
 **新成员**：`git submodule update --init --recursive && ./skills/install-local.sh`，没有第二步。详见 forge [`README.md`](../README.md) §新成员。
 
-### 已装的两个包（19 个 skill）
+### 已装来源（4 个，21 个 skill）
 
 **`cinematic-storytelling`**（7）：`silent-web-cinema`（orchestrator）、`storytelling`、`brand-storytelling`、`filmmaker`、`scroll-world-storytelling`、`cinematic-scroll-storytelling`、`motion-and-storytelling`
 
 **`threejs-3d-gamedev`**（12）：`threejs-fundamentals`、`threejs-geometry`、`threejs-lighting`、`threejs-materials`、`threejs-shaders`、`threejs-postprocessing`、`threejs-performance`、`ghibli-environment-art`、`camera-systems`、`game-development`（orchestrator，下辖 10 个子 skill 由它路由读取，不单独注册）、`img2threejs`、`blender-modeling`
+
+**单 skill 来源**（2，无 `plugin.json`，从各自原作者仓逐字取回，溯源见各目录 `SOURCE.md`）：
+
+| skill | 上游 | 许可 |
+|---|---|---|
+| `captions-overlay` | [`heygen-com/hyperframes`](https://github.com/heygen-com/hyperframes) `.agents/skills/captions-overlay` @ `8c31cb3` | Apache-2.0 |
+| `impeccable` | [`pbakaus/impeccable`](https://github.com/pbakaus/impeccable) `.agents/skills/impeccable` @ `b49177d`（自标 v4.10.0） | Apache-2.0 |
+
+这两个是为补 `silent-web-cinema` 的断引用而取的——打包者把它们放在另外两个包里，本仓拿不到那两个包。
 
 只有 5 个会被模型自动触发：`silent-web-cinema`、`scroll-world-storytelling`、`threejs-fundamentals`、`ghibli-environment-art`、`blender-modeling`。其余 14 个带 `disable-model-invocation: true`，需显式调用。
 
@@ -95,6 +107,7 @@ Antigravity 全局只走整包形态：它同时发现 `config/skills/` 和 `con
 | `blender-modeling` | 本机 Blender + Node ≥ 20。**无需设环境变量**，路径已本地化 |
 | `img2threejs` | Python 3.10+；可选视觉适配器 `uv sync --project integrations/vision --python 3.11`（SAM2 / Depth Anything V2 / MediaPipe）。`IMG2THREEJS_SHOWCASE_ROOT` / `IMG2THREEJS_REQUIRE_SHOWCASE` 只影响该 skill 自带的 runtime 测试，日常使用不需要 |
 | `scroll-world-storytelling` | ffmpeg |
+| `impeccable` | 无需配置（运行时按 SKILL.md 所在目录自解析路径）。但 `scripts/impeccable` 启动器跑的是自带二进制，**本地没有时首次运行会联网下载一次** |
 
 组员自检（不需要先配任何东西，路径已本地化）：
 
@@ -108,7 +121,8 @@ node ~/.claude/skills/blender-modeling/scripts/blender-rt.mjs viewport doctor
 ### 已知缺口
 
 - `threejs-3d-gamedev/README.md` 列了 `godot-gdscript-patterns`，**包内无此目录**，装不了。
-- `silent-web-cinema` 等引用了 `copywriting`、`captions-overlay`、`impeccable` —— 它们属于上游另三个包（`writing-and-agent-ops`、`hyperframes-video-studio`、`frontend-ui-ux`），本仓没有，引用会断。
+- `silent-web-cinema` 正文引用的 3 个外包 skill 里，`captions-overlay` 与 `impeccable` 已从各自原作者仓取回补齐（见上文「单 skill 来源」），**只剩 `copywriting` 一条断着**。没补它是因为社区至少三四个同名 skill 内容各异，无法判断打包者用的是哪个，瞎挑一个比留着更坏；而它被引用处（`SKILL.md:40`）要用的 Three-Question Gate 三个问题已在正文内联写全。
+- `captions-overlay` 自己声明「applies ON TOP of the `/hyperframes` skill's `references/captions.md`」，那个主 skill 本仓没装（HyperFrames 视频渲染专用），所以它这一层引用仍悬空。要用的 drop / rail / embed 字幕模型在它本文件里是完整的。
 - 19 个 skill 均无 `evals/`，不在本仓契约闸覆盖范围内，也不在 `ALL_SKILLS` 白名单里。
 - `blender-modeling` 装出来的 `.md` 里的 `SKILL_DIR` 默认路径与上游不同（见上文「路径本地化」）。这是产物层的改写，`vendor/` 源文件未改。
 - `scroll-world-storytelling/demo/video/assets/contract-flight.mp4`（3.7M）**已从本仓删除**，这是 `vendor/` 唯一偏离上游原样副本之处。同目录的 `contract-flight-source.svg` 与海报 `contract-flight.webp` 保留，demo 退化为静态海报而非报错；需要样片时按该目录 `README.md` 的参数用 ffmpeg 从源 SVG 重生成，文件名保持不变。
