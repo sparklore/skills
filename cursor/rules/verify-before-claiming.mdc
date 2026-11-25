@@ -1,0 +1,44 @@
+---
+description: Trace real runtime chain before planning; zero dropped swarm promises or fake shims; live runtime proof + Requirement Proof Table required before claiming done
+alwaysApply: true
+---
+
+# Verify Before Planning or Claiming Done (Plan-to-Live-Proof Gate)
+
+This rule is mandatory for every behavioral fix, feature, refactor, or `/swarm` execution across `sparklore-forge` and `sparklore-clients`.
+
+## Rule 1 — Trace the Real Runtime Path Before Planning
+
+Never pitch a plan, root-cause diagnosis, or architecture change from assumptions or memory. Before proposing any behavioral plan:
+
+1. Read and cite the complete real entry-to-exit runtime chain using exact `file:line` references:
+   `UI element / click handler -> frontend transport / controller -> HTTP / SSE / WS route -> server handler -> CognitiveSlots / LLMConfig slot / QuestFlow node / KV storage`.
+2. Read the real configuration schema and real consumer paths (e.g., `CognitiveSlots` in `internal/assistant/llm_config.go` and `resolveVoiceTarget` in `internal/server/admin_llm.go`) to verify which model slot actually receives the call.
+3. If any link in the call chain has not been read yet, explicitly label it `UNREAD` and read it before pitching the plan.
+
+## Rule 2 — Promise-to-Owner Parity (Zero Silent Drops / Zero Fake Stubs)
+
+1. Number every user-facing promise in an approved plan (`R1, R2, ...`) and map each `R#` to a single explicit owner and target `file:line` range.
+2. When delegating to `/swarm` or subagents:
+   - Every `R#` MUST appear verbatim inside an assigned owner's brief.
+   - Cross-file seams (e.g., `backend <-> frontend`, `tooltip <-> handler`, `slot config <-> caller`, `ask route <-> Quest engine`) MUST have an explicit owner authorized to update both ends or coordinate an exact contract.
+3. Workers and executors are **strictly forbidden** from silently faking a missing backend/upstream contract (for example, wrapping a blocking POST response in a fake streaming helper, swallowing non-2xx errors into empty strings, or editing a tooltip/label without changing the underlying behavior). If an upstream contract is missing or broken, stop and escalate to re-plan.
+
+## Rule 3 — Real User-Journey Runtime Proof Gate
+
+Compiles (`go build`), static checks (`go vet`, `git grep`, `make lint-js`), mocked unit tests (`httptest`, synthetic JS unit tests), and empty-state screenshots (`-data-dir :memory:` with no models configured) NEVER prove a user-facing feature works.
+
+1. Before claiming `DONE` on any user-facing behavior, run at least one **live runtime verification** matching the actual user journey:
+   - Real server binary with realistic or live `LLMConfig` / `system-models.json` shape;
+   - Real endpoint / Quest SSE event stream / UI action triggering the actual path;
+   - Measured end-to-end latency whenever latency or responsiveness is a stated goal.
+2. Any check backed only by mocks or static grep MUST be labeled `MOCK-ONLY / NOT RUNTIME-VERIFIED`. Never report `"all done"` while any promised requirement rests solely on mocks.
+
+## Rule 4 — Mandatory Requirement Proof Table (User Auditability)
+
+Every final delivery report for behavioral or UI changes MUST include a **Requirement Proof Table** with these exact columns:
+
+| Req | Plan Promise | Actual Diff (`file:line`) | Verification Kind (`LIVE RUNTIME` / `UNIT-MOCK` / `NOT RUN`) | Exact Command + Observed Output | Status (`VERIFIED` / `UNVERIFIED`) |
+|---|---|---|---|---|---|
+
+Follow the table with copy-pasteable commands/steps the user can run to reproduce every `VERIFIED` row independently. If any row is `UNVERIFIED` (or `UNIT-MOCK` for a runtime promise), explicitly list the gap and do **not** claim completion.

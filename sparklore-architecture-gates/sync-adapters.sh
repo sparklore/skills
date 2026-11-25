@@ -16,7 +16,7 @@ OUT_CURSOR="$ROOT/adapters/cursor"
 SKILLS_ROOT="$(cd "$ROOT/.." && pwd)"
 
 ALL_RULES="audit-evidence data-driven no-silent-orchestration no-zombie-dual-track"
-ALL_SKILLS="sparklore-architecture-gates architecture-compliance-audit intent-compile session-charter acceptance-gate design-first-feature quality-guardrails code-review-audit simplify-codebase sparklore-context"
+ALL_SKILLS="sparklore-architecture-gates architecture-compliance-audit intent-compile session-charter acceptance-gate design-first-feature quality-guardrails code-review-audit simplify-codebase sparklore-context ux-proof-workflow"
 ALL_TARGETS="cursor-rules claude-rules cursor-skills agents-skills"
 
 DESC_audit_evidence='审计证据分级：每条发现标 G1 已确认 / G2 读过链 / G3 推断；G3 不得带预估或波次；差集不是结论'

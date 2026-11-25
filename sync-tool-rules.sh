@@ -47,6 +47,7 @@ DESC = {
     "session-plan": "Charter first; verifiable slices; sign-off with C=是; one wave per chat; filled handoff block",
     "test-data": "Short unique test names; delete before close; fail on delete errors; no seed litter",
     "ui-designer": "Tokens/components first; WCAG AA; checkable numbers; page code is frontend",
+    "verify-before-claiming": "Trace real runtime chain before planning; zero dropped swarm promises or fake shims; live runtime proof + Requirement Proof Table required before claiming done",
     "visible-entry": "Require uncommented visible entry before API work unless 「强制做这条、不管有没有入口」",
 }
 # Gate descriptions are owned by the gates skill; sync-adapters.sh installs after us and would overwrite any copy here.
