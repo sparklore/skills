@@ -1,0 +1,44 @@
+---
+description: All system/Admin settings must cloud-sync via Forge PG SSoT (/v1/me/admin/*); closed machine-local exemption list; honest forge_synced status; strict secret hygiene & deploy parity
+alwaysApply: true
+---
+
+# All System Settings Must Cloud-Sync via Forge SSoT
+
+This rule is mandatory for every system-level or Admin configuration change across `sparklore-forge` and `sparklore-clients`.
+
+## Rule 1 — Single Cloud SSoT for All System / Admin Settings
+
+1. Every system-level or Admin configuration MUST persist to Forge PostgreSQL SSoT (`platform_system_models` / `platform_settings` via `/v1/me/admin/*`) and hydrate automatically on every connected host (Desktop and Web Server):
+   - LLM providers and System Model profiles;
+   - All 9 Cognitive & Multimodal Slots (`decision`, `fast`, `deep`, `embedding`, `image`, `video`, `tts`, `stt`, `music`), including `voice` and `protocol`;
+   - Global Web Search configuration (`web_search`: Tavily API key and SearXNG URL);
+   - Platform runtime settings, roles, credit pricing, and published catalog.
+2. Adding a new Admin or system setting in `sparklore-clients` as local-only (`ud_local` or `system-models.json`) without simultaneously adding its Forge PG schema/field, `/v1/me/admin/*` route/field, BFF proxy pass-through, and round-trip hydration is a **P0 architecture violation**.
+
+## Rule 2 — Closed Machine-Local Exemption List
+
+1. ONLY host-hardware or OS-bound preferences may remain machine-local (`ud_local` or `~/.sparklore/runtimes/prefs.json`):
+   - Local engine lifecycle and hardware toggles (`local-voice`, `local-embed`, `local-computer-use` auto-start, headless mode, and local routing);
+   - Local file paths;
+   - Device identity (`device.id`);
+   - Local media recordings.
+2. This exemption list is **closed**. Any other system/Admin setting MUST cloud-sync via Forge PG SSoT unless granted an explicit architecture exemption.
+3. Every exempted machine-local setting MUST be visibly labeled `"This device only"` in the UI.
+
+## Rule 3 — No Silent Cloud-Sync Failures
+
+1. Every system-setting save API in `sparklore-clients` MUST return honest `forge_synced` (`bool`) and `forge_sync_error` (`string`).
+2. Admin UI MUST surface `forge_synced === false` loudly and persistently with the error reason (`forge_sync_error`). Displaying a bare `"Saved"` toast when cloud sync failed is strictly forbidden.
+
+## Rule 4 — Secret Hygiene & Trusted Runtime Hydration
+
+1. NEVER expose plaintext API keys (`api_key`, `tavily_api_key`, etc.) on public/member endpoints (`GET /v1/me/system-models`), in `ud_sync`, on default `GET /v1/me/admin/system-models`, or in any browser-facing `/api/*` response of `sparklore-clients` (always return `.Sanitized()` and masked status projections).
+2. Trusted server-side runtime secret hydration (`GET /v1/me/admin/system-models?include_secrets=1`) is strictly restricted to verified Admin or authenticated service callers (regular member tokens MUST receive `403`).
+3. Hydrated secrets MUST stay in server memory or `ud_local` only — never echo them to browser responses and never write them to `ud_sync`.
+
+## Rule 5 — Cross-Repo Deploy Parity
+
+Any PR or wave adding or extending Forge `/v1/me/*` routes or payload fields MUST verify Forge deployment parity, and MUST NEVER leave `sparklore-clients` silently calling an undeployed Forge route or field.
+
+Chinese reference (not installed): `zh/system-settings-cloud-sync.md`
