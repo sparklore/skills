@@ -1,19 +1,22 @@
 #!/usr/bin/env bash
-# Generate Cursor .mdc adapters from plain rules/*.md; optionally install local mirrors.
+# Generate Cursor .mdc adapters from plain rules/*.md; optionally install project mirrors.
 # Usage:
 #   ./sync-adapters.sh
 #   ./sync-adapters.sh --install-local
+#   ./sync-adapters.sh --install-local --project-root=/path/to/any-repo
 #   ./sync-adapters.sh --install-local \
 #     --rules=data-driven,no-silent-orchestration,no-zombie-dual-track \
 #     --skills=sparklore-architecture-gates,architecture-compliance-audit,intent-compile,session-charter,acceptance-gate \
 #     --targets=cursor-rules,claude-rules,cursor-skills,agents-skills
 # Omitted --rules/--skills/--targets mean "all". Explicit empty (--rules=) means none.
+# 永不写入 ~/.claude / ~/.cursor；只写 --project-root（默认 = skills 父目录）。
 # Compatible with macOS /bin/bash 3.2 (no namerefs).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 RULES="$ROOT/rules"
 OUT_CURSOR="$ROOT/adapters/cursor"
 SKILLS_ROOT="$(cd "$ROOT/.." && pwd)"
+PROJECT_ROOT="$(cd "$SKILLS_ROOT/.." && pwd)"
 
 ALL_RULES="audit-evidence data-driven no-silent-orchestration no-zombie-dual-track"
 ALL_SKILLS="sparklore-architecture-gates architecture-compliance-audit intent-compile session-charter acceptance-gate design-first-feature quality-guardrails code-review-audit simplify-codebase sparklore-context ux-proof-workflow"
@@ -71,6 +74,14 @@ count_words() {
 for arg in "$@"; do
   case "$arg" in
     --install-local) INSTALL=1 ;;
+    --project-root=*)
+      raw="${arg#--project-root=}"
+      if [ -z "$raw" ] || [ ! -d "$raw" ]; then
+        echo "invalid --project-root: $raw" >&2
+        exit 1
+      fi
+      PROJECT_ROOT="$(cd "$raw" && pwd)"
+      ;;
     --rules=*)
       RULES_SET=1
       RULES_SEL="$(csv_to_space "${arg#--rules=}")"
@@ -85,7 +96,7 @@ for arg in "$@"; do
       ;;
     *)
       echo "unknown arg: $arg" >&2
-      echo "usage: $0 [--install-local] [--rules=a,b] [--skills=a,b] [--targets=a,b]" >&2
+      echo "usage: $0 [--install-local] [--project-root=PATH] [--rules=a,b] [--skills=a,b] [--targets=a,b]" >&2
       exit 1
       ;;
   esac
@@ -138,17 +149,14 @@ if [ "$INSTALL" -ne 1 ]; then
   exit 0
 fi
 
-# Resolve forge root: .../sparklore-forge/skills/sparklore-architecture-gates -> ../..
-# 凡是有 skills 的路径必须一致；skills/ 只是远程仓备份 / 编辑入口。
-FORGE="$(cd "$ROOT/../.." && pwd)"
-CURSOR_RULES_PROJECT="$FORGE/.cursor/rules"
-CURSOR_RULES_HOME="${HOME}/.cursor/rules"
-CLAUDE_RULES="${HOME}/.claude/rules"
-CURSOR_SKILLS_PROJECT="$FORGE/.cursor/skills"
-CURSOR_SKILLS_HOME="${HOME}/.cursor/skills"
-CLAUDE_SKILLS_HOME="${HOME}/.claude/skills"
-CLAUDE_SKILLS_PROJECT="$FORGE/.claude/skills"
-AGENTS_SKILLS_ROOT="$FORGE/.agents/skills"
+# skills/ 只是远程仓备份；活镜像只写项目根，不写用户 home。
+CURSOR_RULES_PROJECT="$PROJECT_ROOT/.cursor/rules"
+CLAUDE_RULES_PROJECT="$PROJECT_ROOT/.claude/rules"
+CURSOR_SKILLS_PROJECT="$PROJECT_ROOT/.cursor/skills"
+CLAUDE_SKILLS_PROJECT="$PROJECT_ROOT/.claude/skills"
+AGENTS_SKILLS_ROOT="$PROJECT_ROOT/.agents/skills"
+
+echo "sync-adapters project-root=$PROJECT_ROOT"
 
 copy_rule_mdc() {
   local name="$1"
@@ -159,15 +167,14 @@ copy_rule_mdc() {
 }
 
 if want_target cursor-rules || want_target claude-rules; then
-  mkdir -p "$CLAUDE_RULES"
   for name in $RULES_SEL; do
     if want_target cursor-rules; then
       copy_rule_mdc "$name" "$CURSOR_RULES_PROJECT"
-      copy_rule_mdc "$name" "$CURSOR_RULES_HOME"
     fi
     if want_target claude-rules; then
-      cp "$RULES/$name.md" "$CLAUDE_RULES/$name.md"
-      echo "installed Claude rules: $name"
+      mkdir -p "$CLAUDE_RULES_PROJECT"
+      cp "$RULES/$name.md" "$CLAUDE_RULES_PROJECT/$name.md"
+      echo "installed Claude rules: $CLAUDE_RULES_PROJECT/$name.md"
     fi
   done
 fi
@@ -176,7 +183,6 @@ copy_skill_tree() {
   local src="$1"
   local dest="$2"
   mkdir -p "$dest"
-  # 整树对齐（含 references/、evals/、scripts/ 等）；排除噪声
   if command -v rsync >/dev/null 2>&1; then
     rsync -a --delete \
       --exclude '.DS_Store' \
@@ -202,10 +208,7 @@ mirror_skill() {
   local src="$SKILLS_ROOT/$skill_id"
   [ -d "$src" ] || { echo "missing skill dir: $src" >&2; exit 1; }
   if want_target cursor-skills; then
-    # 五处活镜像同树：家目录 + 项目 .cursor/.claude +（agents 另见下）
     copy_skill_tree "$src" "$CURSOR_SKILLS_PROJECT/$skill_id"
-    copy_skill_tree "$src" "$CURSOR_SKILLS_HOME/$skill_id"
-    copy_skill_tree "$src" "$CLAUDE_SKILLS_HOME/$skill_id"
     copy_skill_tree "$src" "$CLAUDE_SKILLS_PROJECT/$skill_id"
   fi
   if want_target agents-skills; then
@@ -217,4 +220,4 @@ for skill_id in $SKILLS_SEL; do
   mirror_skill "$skill_id"
 done
 
-echo "done. rules=$RULES_SEL skills=$SKILLS_SEL targets=$TARGETS_SEL"
+echo "done. rules=$RULES_SEL skills=$SKILLS_SEL targets=$TARGETS_SEL project-root=$PROJECT_ROOT"

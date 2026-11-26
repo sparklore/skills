@@ -60,17 +60,16 @@ CLAUDE_README = """# Claude 规则包（远程仓备份里的源）
 - **其余 `.md`**：非闸 SSoT（纯 Markdown，不要加 Cursor frontmatter）。**执行正文为英文**；用户触发词保留中文（如「验收通过」「可以改」「C=是」「豁免」）。
 - **`zh/`**：中文参考备份，**不**安装到活镜像；Agent 只读顶层英文 `.md`。
 - **`worktree.md`**：仅 Claude。
-- 活镜像在 `~/.claude/rules`（与 `~/.cursor/rules`、项目 `.cursor/rules` 必须一致）。安装：`../../install-local.sh`。
+- 活镜像只写「项目根」：`<project>/.claude/rules`（与 `<project>/.cursor/rules` 一致）。**不写** `~/.claude` / `~/.cursor`。安装：`../../install-local.sh [--project-root=PATH]`。
 """
 
 CURSOR_README = """# Cursor 规则包（生成物）
 
-本目录由 `../../sync-tool-rules.sh` 生成，禁止手改。`skills/` 整仓是远程备份；Agent 读的是活镜像：
+本目录由 `../../sync-tool-rules.sh` 生成，禁止手改。`skills/` 整仓是远程备份；Agent 读的是项目活镜像：
 
-- `~/.cursor/rules`
-- `<forge>/.cursor/rules`
+- `<project>/.cursor/rules`
 
-与 `~/.claude/rules` 条文一致。安装：`../../install-local.sh`。
+与 `<project>/.claude/rules` 条文一致。**不写**用户全局 `~/.cursor`。安装：`../../install-local.sh [--project-root=PATH]`。
 """
 
 
@@ -105,10 +104,23 @@ def write_or_check(path: pathlib.Path, content: str, check: bool) -> bool:
 def main() -> int:
     check = "--check" in sys.argv[1:]
     install = "--install-local" in sys.argv[1:]
-    unknown = [a for a in sys.argv[1:] if a not in ("--check", "--install-local")]
+    project_root = FORGE
+    unknown = []
+    for a in sys.argv[1:]:
+        if a in ("--check", "--install-local"):
+            continue
+        if a.startswith("--project-root="):
+            raw = a.split("=", 1)[1]
+            p = pathlib.Path(raw).expanduser().resolve()
+            if not p.is_dir():
+                print(f"invalid --project-root: {raw}", file=sys.stderr)
+                return 1
+            project_root = p
+            continue
+        unknown.append(a)
     if unknown:
         print(f"unknown arg: {unknown[0]}", file=sys.stderr)
-        print("usage: sync-tool-rules.sh [--check] [--install-local]", file=sys.stderr)
+        print("usage: sync-tool-rules.sh [--check] [--install-local] [--project-root=PATH]", file=sys.stderr)
         return 1
 
     ok = True
@@ -170,11 +182,11 @@ def main() -> int:
         return 0
 
     if install:
-        # 活镜像三处必须一致；skills/ 仓内文件只是远程备份检出，不是运行时真相
+        # 只写项目根；skills/ 仓内文件只是远程备份，不是运行时真相。不写 ~/.claude / ~/.cursor。
+        print(f"sync-tool-rules project-root={project_root}")
         rule_targets = [
-            ("claude-rules", pathlib.Path.home() / ".claude" / "rules", "md"),
-            ("cursor-rules-home", pathlib.Path.home() / ".cursor" / "rules", "mdc"),
-            ("cursor-rules-project", FORGE / ".cursor" / "rules", "mdc"),
+            ("claude-rules-project", project_root / ".claude" / "rules", "md"),
+            ("cursor-rules-project", project_root / ".cursor" / "rules", "mdc"),
         ]
         for label, dest, kind in rule_targets:
             dest.mkdir(parents=True, exist_ok=True)

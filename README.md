@@ -1,18 +1,18 @@
 # sparklore/skills
 
-远程仓库 [`github.com/sparklore/skills`](https://github.com/sparklore/skills) 的本地备份检出（forge 里通常是子模块）。**改完推远程后，必须再装到所有活镜像，保持一致——不要只改本目录当已生效。**
+远程仓库 [`github.com/sparklore/skills`](https://github.com/sparklore/skills) 的本地备份检出（forge 里通常是子模块）。**改完推远程后，必须再装到各仓库项目根的活镜像——不要只改本目录当已生效；也不要写用户全局 `~`。**
 
 ## 真相与镜像（必须统一）
 
 | 角色 | 路径 |
 |---|---|
 | **远程备份 / 编辑入口（SSoT）** | 本目录 `skills/`（推到 `sparklore/skills`） |
-| **活镜像（Agent 实际读）** | `~/.claude/skills` · `~/.cursor/skills` · `<forge>/.cursor/skills` · `<forge>/.claude/skills` · `<forge>/.agents/skills` |
+| **活镜像（Agent 实际读）** | `<project>/.cursor/{rules,skills}` · `<project>/.claude/{rules,skills}` · `<project>/.agents/skills` |
 
-**统一策略：** 凡是有 `skills` 的目录，同一 skill 树（`SKILL.md` + `evals/` + `scripts/` + 附属文件）内容应一致。  
-手改任一活镜像会被下次安装覆盖。多处不一致 = 双轨，禁止。
+**统一策略：** 同一仓库内上述路径的 skill 树应一致；**不同仓库各自安装**（`--project-root=`）。  
+**禁止**写入 `~/.claude` / `~/.cursor` / `~/.gemini`。手改任一项目活镜像会被下次安装覆盖。
 
-**Agent 改 skill 时：** 改完一处后，必须向用户确认是否同步其余镜像；**默认 = 要同步全部**（跑 `./install-local.sh`）。用户说「只改这一处」才跳过。
+**Agent 改 skill 时：** 改完 SSoT 后，确认要对哪些仓库跑安装；默认对当前 `--project-root` 全量同步。
 
 ## 目录
 
@@ -142,12 +142,15 @@ node ~/.claude/skills/blender-modeling/scripts/blender-rt.mjs viewport doctor
 终端：
 
 ```bash
-# 在 skills/ 下：规则 + skills 树 → 全部活镜像
+# 在 skills/ 下：规则 + skills 树 → 默认写入 skills 父目录（forge）
 ./install-local.sh
 
+# 写入任意仓库（例如 clients）
+./install-local.sh --project-root=../sparklore-clients
+
 # 或分步
-./sync-tool-rules.sh --install-local
-cd sparklore-architecture-gates && ./sync-adapters.sh --install-local
+./sync-tool-rules.sh --install-local --project-root=../sparklore-clients
+cd sparklore-architecture-gates && ./sync-adapters.sh --install-local --project-root=../../sparklore-clients
 ```
 
 改规则正文：

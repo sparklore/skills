@@ -4,4 +4,4 @@
 - **其余 `.md`**：非闸 SSoT（纯 Markdown，不要加 Cursor frontmatter）。**执行正文为英文**；用户触发词保留中文（如「验收通过」「可以改」「C=是」「豁免」）。
 - **`zh/`**：中文参考备份，**不**安装到活镜像；Agent 只读顶层英文 `.md`。
 - **`worktree.md`**：仅 Claude。
-- 活镜像在 `~/.claude/rules`（与 `~/.cursor/rules`、项目 `.cursor/rules` 必须一致）。安装：`../../install-local.sh`。
+- 活镜像只写「项目根」：`<project>/.claude/rules`（与 `<project>/.cursor/rules` 一致）。**不写** `~/.claude` / `~/.cursor`。安装：`../../install-local.sh [--project-root=PATH]`。
