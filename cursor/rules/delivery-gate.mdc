@@ -37,6 +37,14 @@ One primary instruction per step. Commands already run must still appear in huma
 
 Forbidden: dumping only a start or test command; putting steps only in a doc; asking the user to open a page before the process is confirmed listening; on failure, telling the user to change unrelated inputs.
 
+## Console-first acceptance (visual only)
+
+When the project has a local console (forge: `make panel` → `http://127.0.0.1:7789`), every human acceptance step is a click: 「组名 → 卡片 → 按钮 → 期望」, or an action on a page. Never ask the user to type a terminal command for anything the console or a page can do.
+
+- A step the console cannot do yet (start a variant with other flags / env, run one specific test, force a mode) → the plan adds a console card (`scripts/devpanel/services.json`; variants via `choices`) as a deliverable, and acceptance clicks that card.
+- Terminal commands for humans only for troubleshooting after a FAIL, or when a card truly cannot exist (one-line reason). Label them 「排障用」.
+- The agent's own evidence commands still go under 验收证据; the human steps stay clicks.
+
 When the user asks to finish in one go, pauses between steps may be skipped. A stage that is not green does not count as passed; required end-to-end checks for the close-out must not be skipped.
 
 When user acceptance points out a rule blind spot or repeated low-level mistakes: after fixing, ask whether to write it into the matching rule; architecture hard gates go only into `skills/sparklore-architecture-gates/`; process rules go into `session-plan` / `engineering` / `delivery-gate` etc. — do not default into gates.

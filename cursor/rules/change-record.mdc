@@ -1,5 +1,5 @@
 ---
-description: After code/config/script changes: comments (default none; plain if the allow gate passes), CHANGELOG, copy-pasteable commit message. Skip for pure Q&A
+description: After code/config/script changes: comments (default none), CHANGELOG, copy-pasteable commit message. Skip for pure Q&A
 alwaysApply: true
 ---
 
