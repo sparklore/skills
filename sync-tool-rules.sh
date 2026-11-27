@@ -45,6 +45,7 @@ DESC = {
     "legacy-align": "When aligning to legacy, preserve cache-key semantics; document behavior diffs",
     "no-fake-data": "No invented business data; empty is valid; shapes match real samples",
     "session-plan": "Charter first; verifiable slices; sign-off with C=是; one wave per chat; filled handoff block",
+    "sync-privacy-policy": "Data-driven UserSyncPolicy; Two-Layer Privacy Gate (PolicyFilter + VolatileOverlay ZeroPersist); CME/KG exclusion; fail-closed outbound PII redaction; single-source orbthread/*",
     "system-settings-cloud-sync": "All system/Admin settings must cloud-sync via Forge PG SSoT (/v1/me/admin/*); closed machine-local exemption list; honest forge_synced status; strict secret hygiene & deploy parity",
     "test-data": "Short unique test names; delete before close; fail on delete errors; no seed litter",
     "ui-designer": "Tokens/components first; WCAG AA; checkable numbers; page code is frontend",
