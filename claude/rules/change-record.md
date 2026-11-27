@@ -6,9 +6,9 @@ Chinese reference (backup only; not installed to live mirrors): `zh/change-recor
 
 ## Comments
 
-**Prefer zero comments.** Do not add or rewrite code comments by default. Readable code is the deliverable; comments are not.
+**Default: no comments.** Do not add or rewrite code comments unless they pass the “Allowed only when” gate below. Readable code is the deliverable; comments are not. When in doubt, leave no comment.
 
-If a comment is still necessary, write **plain speech**: one short sentence, direct, no throat-clearing. Say the footgun or invariant — do not define the type, walk fields, or wrap the point in jargon.
+If a comment must be written, use **plain speech**: one short sentence, direct, no throat-clearing. Say the footgun or invariant — do not define the type, walk fields, or wrap the point in jargon.
 
 ### Prefer types and tests over comments
 
