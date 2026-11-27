@@ -1,5 +1,5 @@
 ---
-description: After code/config/script changes: comments (default none), CHANGELOG, copy-pasteable commit message. Skip for pure Q&A
+description: After code/config/script changes: comments (prefer zero; plain if needed), CHANGELOG, copy-pasteable commit message. Skip for pure Q&A
 alwaysApply: true
 ---
 
@@ -11,7 +11,9 @@ Chinese reference (backup only; not installed to live mirrors): `zh/change-recor
 
 ## Comments
 
-**Do not add or rewrite code comments by default.** Readable code is the deliverable; comments are not.
+**Prefer zero comments.** Do not add or rewrite code comments by default. Readable code is the deliverable; comments are not.
+
+If a comment is still necessary, write **plain speech**: one short sentence, direct, no throat-clearing. Say the footgun or invariant — do not define the type, walk fields, or wrap the point in jargon.
 
 ### Prefer types and tests over comments
 
@@ -22,6 +24,8 @@ Product / architecture **contracts** (docs, ADR, QuestFlow, schemas) live in tho
 ### Always forbidden (common agent failure modes)
 
 - Restating what the code already does ("iterate the list", "return the result")
+- Multi-line essays that restate a type or its fields when names already say it
+- Roundabout / academic phrasing when a plain sentence would do
 - **Historical narrative** (who said what, which PR, which review, "temporary until later" timelines)
 - Promoting **one-off feedback** into a standing rule (anti-example: `// Lauren said not to do this`)
 - Step-by-step comments on **hot paths**, frequently changed business branches, or ad-hoc fixes (they rot faster than the code and mislead more)
@@ -36,14 +40,14 @@ Before writing a comment, ask: if this line were deleted, would a future reader 
 
 1. Types and tests cannot already enforce or demonstrate the point
 2. The surrounding code is expected to be **rarely changed** (stable surface), not a walkthrough of this change
-3. It explains **why** (or concurrency / lifecycle / compatibility) in one short sentence — never what/how, never a person's name, never a specific PR, never a pasted docs/ADR paragraph
+3. One short plain sentence for **why** (or concurrency / lifecycle / compatibility) — never what/how, never a person's name, never a specific PR, never a pasted docs/ADR paragraph
 
 Allowed shape: `// CAS: final failure must return error; never swallow as success`  
-Forbidden shapes: `// per Lauren's review` / `// fix yesterday's nil deref` / `// docs/27: perpetual may omit output`
+Forbidden shapes: `// per Lauren's review` / `// fix yesterday's nil deref` / `// docs/27: perpetual may omit output` / long field-by-field type essays
 
 Skip comments on getters, pure pass-throughs, and fragments that already match the surrounding pattern.
 
-If the user **explicitly** asks in the same message to comment a specific place, add only that place — historical narrative and docs-contract copies remain forbidden.
+If the user **explicitly** asks in the same message to comment a specific place, add only that place — keep it plain and short; historical narrative and docs-contract copies remain forbidden.
 
 ## CHANGELOG
 
